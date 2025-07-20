@@ -123,45 +123,45 @@ class _mine_viewState extends State<mine_view> with TickerProviderStateMixin{
                                       padding: WidgetStatePropertyAll(EdgeInsets.zero)
                                     ),
                                     onPressed: () {
-                                      Navigator.pushNamed(context, "/open_member");
-                                      // showDialog(
-                                      //     context: context,
-                                      //     builder: (context){
-                                      //       return AlertDialog(
-                                      //           title: Text("激活"),
-                                      //           content: TextField(
-                                      //             autofocus: true,
-                                      //             controller: textEditingController,
-                                      //             decoration: InputDecoration(
-                                      //               hintText: "请输入激活码",
-                                      //               focusColor: Colors.deepOrange,
-                                      //               contentPadding: EdgeInsets.symmetric(vertical: 4,horizontal: 8)
-                                      //             ),
-                                      //           ),
-                                      //           actions: [
-                                      //             TextButton(onPressed: () async{
-                                      //               FocusScope.of(context).unfocus();
-                                      //               Navigator.pop(context);
-                                      //               bool islogin = await mine_provider.post_active(textEditingController.text);
-                                      //               if(islogin){
-                                      //                 showToast("激活成功",backgroundColor: Colors.black54,position: ToastPosition.bottom,radius: 40,textStyle: TextStyle(color: Colors.white));
-                                      //               }
-                                      //               final sp = await SharedPreferences.getInstance();
-                                      //               final code = sp.getString("code");
-                                      //               if(code!=null){
-                                      //                 print(code);
-                                      //                 await mine_provider.post_code(code);
-                                      //                 await listview_provider.get_list(code);
-                                      //               }
-                                      //               else{
-                                      //                 print("code为空");
-                                      //               }
-                                      //             }, child: Text('激活')),
-                                      //             TextButton(onPressed: (){ Navigator.pop(context);}, child: Text('取消')),
-                                      //           ],
-                                      //
-                                      //       );
-                                      //     });
+                                      // Navigator.pushNamed(context, "/open_member");
+                                      showDialog(
+                                          context: context,
+                                          builder: (context){
+                                            return AlertDialog(
+                                                title: Text("激活"),
+                                                content: TextField(
+                                                  autofocus: true,
+                                                  controller: textEditingController,
+                                                  decoration: InputDecoration(
+                                                    hintText: "请输入激活码",
+                                                    focusColor: Colors.deepOrange,
+                                                    contentPadding: EdgeInsets.symmetric(vertical: 4,horizontal: 8)
+                                                  ),
+                                                ),
+                                                actions: [
+                                                  TextButton(onPressed: () async{
+                                                    FocusScope.of(context).unfocus();
+                                                    Navigator.pop(context);
+                                                    bool islogin = await mine_provider.post_active(textEditingController.text);
+                                                    if(islogin){
+                                                      showToast("激活成功",backgroundColor: Colors.black54,position: ToastPosition.bottom,radius: 40,textStyle: TextStyle(color: Colors.white));
+                                                    }
+                                                    final sp = await SharedPreferences.getInstance();
+                                                    final code = sp.getString("code");
+                                                    if(code!=null){
+                                                      print(code);
+                                                      await mine_provider.post_code(code);
+                                                      await listview_provider.get_list(code);
+                                                    }
+                                                    else{
+                                                      print("code为空");
+                                                    }
+                                                  }, child: Text('激活')),
+                                                  TextButton(onPressed: (){ Navigator.pop(context);}, child: Text('取消')),
+                                                ],
+
+                                            );
+                                          });
                                     },
                                     child: Container(
                                       child: Row(

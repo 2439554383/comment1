@@ -4,6 +4,7 @@ import 'package:comment1/api/http_api.dart';
 import 'package:comment1/models/mine_model.dart';
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 class mine_viewmodel extends ChangeNotifier{
   mine_model _mine_model = mine_model();
   String get code => _mine_model.code;
@@ -40,6 +41,8 @@ class mine_viewmodel extends ChangeNotifier{
     );
     if(response == true){
       _mine_model.isactive = true;
+      final sp = await SharedPreferences.getInstance();
+      final code = sp.setString("code",text);
       notifyListeners();
       print("登陆成功");
       return true;

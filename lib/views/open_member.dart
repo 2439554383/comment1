@@ -109,6 +109,30 @@ class _open_memberState extends State<open_member> {
                           ),
                         ),
                       ),
+                      SizedBox(width: 10.w,),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: (){
+                            value.current_index = 3 ;
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
+                                color:value.current_index == 3?Colors.orangeAccent:Colors.grey.withOpacity(0.5)
+                            ),
+                            child: Column(
+                              children: [
+                                Text("包月会员",style: TextStyle(fontSize: 18.sp,fontWeight: FontWeight.w600,color: Colors.white),),
+                                SizedBox(height: 10.h,),
+                                Text("解锁所有权限",style: TextStyle(fontSize: 14.sp,fontWeight: FontWeight.w400,color: Colors.white),),
+                                SizedBox(height: 10.h,),
+                                Text("0.01元/月",style: TextStyle(fontSize: 16.sp,fontWeight: FontWeight.w400,color: Colors.white),)
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -174,7 +198,7 @@ class _open_memberState extends State<open_member> {
                     style: ButtonStyle(
                       fixedSize: WidgetStatePropertyAll(Size(300.w, 60.h))
                     ),
-                    child: Text(value.current_index==0?"立即支付¥30元":value.current_index==1?"立即支付¥88元":"立即支付¥158元",style: TextStyle(fontSize: 20.sp,fontWeight: FontWeight.w600),)
+                    child: Text(value.current_index==0?"立即支付¥30元":value.current_index==1?"立即支付¥88元":value.current_index==2?"立即支付¥158元":"立即支付¥0.01元",style: TextStyle(fontSize: 20.sp,fontWeight: FontWeight.w600),)
                 ),
                 SizedBox(height: 60.h,)
               ],

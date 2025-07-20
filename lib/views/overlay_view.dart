@@ -207,7 +207,7 @@ class _overlay_viewState extends State<overlay_view> with SingleTickerProviderSt
                     // await FlutterOverlayWindow.closeOverlay();
 
                     overlay_provider.isload = true;
-                        await FlutterOverlayWindow.resizeOverlay(WindowSize.matchParent, adjustedHeight,false);
+                        await FlutterOverlayWindow.resizeOverlay(1, 1,false);
                         await FlutterOverlayWindow.updateFlag(OverlayFlag.focusPointer);
                         Future.delayed(Duration(milliseconds: 500),(){
                           overlay_provider.switch_windows(false);
@@ -300,7 +300,7 @@ class _overlay_viewState extends State<overlay_view> with SingleTickerProviderSt
                       Flexible(
                         flex: 2,
                         child: Container(
-                          padding: EdgeInsets.only(left: 50,right: 50),
+                          padding: EdgeInsets.only(left: 30,right: 30),
                           child: Row(
                             spacing: 20,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -428,7 +428,7 @@ class _overlay_viewState extends State<overlay_view> with SingleTickerProviderSt
                       Flexible(
                         flex: 2,
                         child: Container(
-                          padding: EdgeInsets.only(left: 50,right: 50),
+                          padding: EdgeInsets.only(left: 30,right: 30),
                           child: Row(
                             spacing: 20,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -440,7 +440,6 @@ class _overlay_viewState extends State<overlay_view> with SingleTickerProviderSt
                                   onPressed: () async {
                                     content = textEditingController.text;
                                     try {
-
                                       await overlayChannel.invokeMethod('printMessage', {'msg': content});
                                     } on PlatformException catch (e) {
                                       print("发送失败: ${e.message}");
@@ -495,11 +494,11 @@ class _overlay_viewState extends State<overlay_view> with SingleTickerProviderSt
                                       overlay_provider.isload = false;
                                       overlay_provider.switch_windows(true);
                                       if(overlay_provider.isvisiable == true){
-                                        await FlutterOverlayWindow.resizeOverlay(wid.toInt(), wid.toInt(), false);
+                                        await FlutterOverlayWindow.resizeOverlay(2,2, false);
                                         await FlutterOverlayWindow.updateFlag(OverlayFlag.defaultFlag);
                                       }
 
-                                }, child: FittedBox(child: Text("关闭"))),
+                                }, child: FittedBox(child: Text("最小化"))),
                               ),
                             ],
                           ),

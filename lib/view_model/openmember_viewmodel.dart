@@ -11,7 +11,7 @@ class openmember_viewmodel extends ChangeNotifier{
    Color _bgcolor = Colors.grey;
    int _current_index = 0;
    pay() async{
-      final todjango = await http_api().all_api("http://139.196.235.10:8005/comment/pay/",_current_index==0?"30":_current_index==1?"88":"158");
+      final todjango = await http_api().all_api("http://139.196.235.10:8005/comment/pay/",_current_index==0?"30":_current_index==1?"88":_current_index==2?"158":"0.01");
       print("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
       print("todjango:${todjango}");
       await AlipayKitPlatform.instance.pay(orderInfo: todjango);

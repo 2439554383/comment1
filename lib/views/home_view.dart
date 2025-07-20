@@ -272,7 +272,7 @@ class _home_viewState extends State<home_view> with TickerProviderStateMixin{
                                                       ),
                             );},
                         ),
-                        Text("AI趣评",style: TextStyle(fontSize: 25),)
+                        Text("AI评论员",style: TextStyle(fontSize: 25),)
                       ],
                     ),
                     Container(
@@ -432,8 +432,8 @@ class _home_viewState extends State<home_view> with TickerProviderStateMixin{
                                                       button_provider.switch_button_color(Theme.of(context).primaryColor);
                                                       overlay_provider.open_overlay(false);
                                                       await FlutterOverlayWindow.showOverlay(
-                                                          width: wid.toInt(),
-                                                          height: wid.toInt(),
+                                                          width: 300,
+                                                          height: 300,
                                                           enableDrag: false,
                                                           alignment :OverlayAlignment.topRight,
                                                           positionGravity: PositionGravity.auto,

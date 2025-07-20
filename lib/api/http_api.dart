@@ -36,9 +36,17 @@ class http_api{
         print("传输结束，数据流关闭");
         print(streamcontroller.isClosed);
       });
+
     }
     else{
+      streamcontroller.addError("error");
+      Future.delayed(Duration(seconds: 1),(){
+        streamcontroller.close();
+        print("传输结束，数据流关闭");
+        print(streamcontroller.isClosed);
+      });
       print('请求失败');
+
     }
   }
   postimage_api(String url,String text,String image_path,String type,StreamController streamcontroller) async{
@@ -109,7 +117,7 @@ class http_api{
     if(response.statusCode == 200){
       final data = json.decode(response.body);
       print("data:$data");
-      return data['data'];
+      return data;
     }
     else{
       print('请求失败');
