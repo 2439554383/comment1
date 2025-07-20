@@ -169,7 +169,7 @@ class _open_memberState extends State<open_member> {
                 Spacer(),
                 TextButton(
                     onPressed: (){
-
+                        value.pay();
                     },
                     style: ButtonStyle(
                       fixedSize: WidgetStatePropertyAll(Size(300.w, 60.h))

@@ -109,7 +109,7 @@ class http_api{
     if(response.statusCode == 200){
       final data = json.decode(response.body);
       print("data:$data");
-      return json.decode(response.body);
+      return data['data'];
     }
     else{
       print('请求失败');
@@ -209,12 +209,13 @@ class http_api{
     if(response.statusCode == 200){
       print("请求成功");
       print(response.body);
-      if(response.body.contains("验证数据")){
-        final save_data = await SharedPreferences.getInstance();
-        save_data.setString("code", code);
-        save_data.setBool("isactive", true);
-        return true;
-      }
+      return true;
+      // if(response.body.contains("验证数据")){
+      //   final save_data = await SharedPreferences.getInstance();
+      //   save_data.setString("code", code);
+      //   save_data.setBool("isactive", true);
+      //   return true;
+      // }
     }
     else{
       print('请求失败');
