@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:comment1/view_model/chat_viewmodel.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -214,20 +213,12 @@ class http_api{
     final response = await http.post(
         Uri.parse(url),
     );
-    if(response.statusCode == 200){
-      print("请求成功");
-      print(response.body);
+    if(response.body.contains("验证数据")){
       return true;
-      // if(response.body.contains("验证数据")){
-      //   final save_data = await SharedPreferences.getInstance();
-      //   save_data.setString("code", code);
-      //   save_data.setBool("isactive", true);
-      //   return true;
-      // }
     }
-    else{
-      print('请求失败');
-    }
+  else{
+    return false;
+  }
   }
   get_excel(String url,String name) async{
     final response = await http.get(

@@ -1,0 +1,189 @@
+﻿import 'package:auto_size_text/auto_size_text.dart';
+import 'package:comment1/mixin/color.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:vision_gallery_saver/vision_gallery_saver.dart';
+import 'ai_face_ctrl.dart';
+
+class AiFace extends StatelessWidget {
+  const AiFace({super.key});
+
+  @override
+  build(BuildContext context) {
+    return GetBuilder(
+      init: AiFaceCtrl(),
+      builder: (AiFaceCtrl ctrl) => Scaffold(
+        body: Scaffold(
+          appBar: AppBar(
+            title: AutoSizeText("Ai换脸"),
+          ),
+          body: Container(
+            margin: EdgeInsets.only(left: 15.w,right: 15.w,top: 0,bottom: 0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 20.h,),
+                sourceImage(context, ctrl),
+                SizedBox(height: 30.h,),
+                changeIcon(context, ctrl),
+                SizedBox(height: 30.h,),
+                faceImage(context, ctrl),
+                SizedBox(height: 20.h,),
+                // generatedImage(context, ctrl),
+                // SizedBox(height: 20.h,),
+                SizedBox(height: 40.h,),
+                nextButton(context, ctrl),
+                SizedBox(height: 40.h,),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget sourceImage(BuildContext context, AiFaceCtrl ctrl) {
+    return GestureDetector(
+      onTap: () async {
+        ctrl.pickImage("source");
+      },
+      child: Container(
+        width: 200.w,
+        height: 200.h,
+        alignment: Alignment.center,
+        clipBehavior: Clip.hardEdge,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.r),
+            color: CupertinoColors.secondarySystemBackground.withOpacity(0.5)
+        ),
+        child: ctrl.sourceImage!=null?Image.file(
+          ctrl.sourceImage,
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.cover,):AutoSizeText("上传模版图"),
+      ),
+    );
+  }
+  Widget changeIcon(BuildContext context, AiFaceCtrl ctrl){
+    return Container(
+      child: Center(child: RotatedBox(quarterTurns: 1,
+      child: Image.asset("assets/images/translate.png",width: 40.w,height: 40.w,))),
+    );
+  }
+  Widget faceImage(BuildContext context, AiFaceCtrl ctrl){
+    return GestureDetector(
+      onTap: () async {
+        ctrl.pickImage("face");
+      },
+      child: Container(
+        width: 200.w,
+        height: 200.h,
+        alignment: Alignment.center,
+        clipBehavior: Clip.hardEdge,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10.r),
+            color: CupertinoColors.secondarySystemBackground.withOpacity(0.5)
+        ),
+        child: ctrl.faceImage!=null?Image.file(
+            ctrl.faceImage,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+        ):AutoSizeText("上传人脸图"),
+      ),
+    );
+  }
+  
+  Widget generatedImage(BuildContext context, AiFaceCtrl ctrl){
+    return Flexible(
+      flex: 3,
+      child: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: CupertinoColors.secondarySystemBackground
+          ),
+          child: FutureBuilder(
+              future: ctrl.myFuture,
+              builder: (context,snapshot){
+                if(snapshot.connectionState == ConnectionState.waiting){
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 10,),
+                      AutoSizeText("正在生成中～")
+                    ],
+                  );
+                }
+                else if(snapshot.hasData){
+                  return Column(
+                    children: [
+                      SizedBox(height: 10,),
+                      GestureDetector(
+                        onTap: () async{
+                          final status = await Permission.photos.request();
+                          if(status.isGranted){
+                            final save_image = VisionGallerySaver.saveImage(
+                                ctrl.generatedImage
+                            );
+                            save_image.whenComplete((){
+                            });
+                          }
+                          else{
+                            print("没有获取到权限");
+                          }
+                        },
+                        child: Container(
+                          padding: EdgeInsets.only(right: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Icon(Icons.file_download),
+                              AutoSizeText("下载")
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(child: Image.memory(ctrl.generatedImage)),
+                    ],
+                  );
+                }
+                else if(snapshot.hasError){
+                  return AutoSizeText("合成失败");
+                }
+                else{
+                  return AutoSizeText("「生成结果将在这里显示」");
+                };
+              }
+          )
+      ),
+    );
+  }
+  
+  Widget nextButton(BuildContext context, AiFaceCtrl ctrl){
+    return Container(
+        alignment: Alignment.center,
+        child: ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(CustomColors.getMainColor(context))
+          ),
+          onPressed: (){
+            ctrl.myFuture =  ctrl.generate();
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(FontAwesomeIcons.magic),
+              SizedBox(width: 5,),
+              AutoSizeText("换脸",style: TextStyle(fontSize: 16.sp,fontWeight: FontWeight.w500,color: Colors.white))
+            ],
+          ),
+        )
+    );
+  }
+}
