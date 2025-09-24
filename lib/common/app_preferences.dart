@@ -54,5 +54,6 @@ abstract class FStorageKey {
   static const financingAccountResponse = 'financingAccountResponse';
   static const fpositonObject = 'fpositonObject';
   static const frecordObject = 'frecordObject';
+  static const typeList = 'typeList';
 
 }

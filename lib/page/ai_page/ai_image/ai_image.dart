@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import '../../../common/app_component.dart';
+import '../../../data/user_data.dart';
 import 'ai_image_ctrl.dart';
 
 class AiImage extends StatelessWidget {
@@ -23,6 +25,11 @@ class AiImage extends StatelessWidget {
               SizedBox(height: 15.h,),
               imageItem(context, ctrl),
               SizedBox(height: 15.h,),
+              Container(
+                  alignment: Alignment.centerRight,
+                  child: Text("内容由Ai生成")
+              ),
+              SizedBox(height: 10.h,),
               generatedButtom(context, ctrl),
               SizedBox(height: 20.h,),
             ],
@@ -74,7 +81,18 @@ class AiImage extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                                Expanded(child: Image.network(ctrl.image)),
+                                Expanded(child: Center(
+                                  child: Stack(
+                                    children: [
+                                      Image.network(ctrl.image),
+                                      Positioned(
+                                          bottom: 10.h,
+                                          right: 10.w,
+                                          child: Text("内容由Ai生成")
+                                      )
+                                    ],
+                                  ),
+                                )),
                               ],
                             );
                           }
@@ -123,11 +141,16 @@ class AiImage extends StatelessWidget {
               borderSide: BorderSide(color: Colors.white),
             ),
             suffixIcon: TextButton(style:ButtonStyle(backgroundColor: WidgetStatePropertyAll(Theme.of(context).primaryColor)),onPressed: () async{
-              var post_text = ctrl.textEditingController.text;
-              ctrl.textEditingController.clear();
-              ctrl.image = null;
-              FocusScope.of(context).unfocus();
-              ctrl.imageFuture =  ctrl.postImage(post_text);
+              if(UserData().isLogin){
+                var post_text = ctrl.textEditingController.text;
+                ctrl.textEditingController.clear();
+                ctrl.image = null;
+                FocusScope.of(context).unfocus();
+                ctrl.imageFuture =  ctrl.postImage(post_text);
+              }
+              else{
+                showToast("请您先登录");
+              }
             }, child: AutoSizeText("生成",style: TextStyle(fontSize: 16.sp,fontWeight: FontWeight.w500,color: Colors.white)))
         ),
       ),

@@ -19,7 +19,7 @@ class LoginCtrl extends GetxController {
     super.dispose();
   }
 
-  final formKey = GlobalKey<FormState>();
+  final formKeyLogin = GlobalKey<FormState>();
   late TextEditingController phone = TextEditingController();
   late TextEditingController password = TextEditingController();
 

@@ -1,4 +1,6 @@
-﻿import 'package:flutter/cupertino.dart';
+﻿import 'package:comment1/network/dio_util.dart';
+import 'package:comment1/old_network/dio_util.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -7,6 +9,9 @@ import 'package:vision_gallery_saver/vision_gallery_saver.dart';
 
 import '../../../api/http_api.dart';
 import '../../../common/app_component.dart';
+import '../../../common/loading.dart';
+import '../../../network/apis.dart';
+import '../../../old_network/apis.dart';
 
 class AiImageCtrl extends GetxController {
   @override
@@ -27,8 +32,14 @@ class AiImageCtrl extends GetxController {
   late TextEditingController textEditingController = TextEditingController();
 
   postImage(var text) async{
-    image= await http_api().post_aiimage("http://134.175.230.215:8005/comment/get_aiimage/", text);
+    final data = {
+      "text":text
+    };
+    final response = await OldHttpUtil().post(OldApi.getImage,data: data);
+    print("${response.data}");
+    image= response.data;
     if(image!=null){
+      point();
       update();
       return image;
     }
@@ -37,21 +48,33 @@ class AiImageCtrl extends GetxController {
     }
 
   }
-  download() async {
-    final status = await Permission.photos.request();
-    if(status.isGranted){
-      final response = await http.get(Uri.parse(image));
-      print(response.bodyBytes);
-      final save_image = VisionGallerySaver.saveImage(
-          response.bodyBytes
-      );
-      save_image.whenComplete((){
-        showToast("保存成功");
-      });
-    }
-    else{
-      showToast("保存失败");
-      print("没有获取到权限");
-    }
+  point() async {
+    final data = {
+      "template_id":1
+    };
+    final r = await HttpUtil().post(Api.point,data: data);
   }
+  download() async {
+    Loading.show();
+
+    // Android 13+ 推荐用 Permission.photos
+    final status = await Permission.photos.request();
+
+    if (status.isGranted) {
+      final response = await http.get(Uri.parse(image));
+
+      final result = await VisionGallerySaver.saveImage(response.bodyBytes);
+
+      if (result != null) {
+        showToast("保存成功");
+      } else {
+        showToast("保存失败");
+      }
+    } else {
+      showToast("没有权限");
+    }
+
+    Loading.dismiss();
+  }
+
 }

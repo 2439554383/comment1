@@ -1,4 +1,5 @@
-﻿import 'package:comment1/page/ranking/recharge_rank/recharge_rank_ctrl.dart';
+﻿import 'package:comment1/data/user_data.dart';
+import 'package:comment1/page/ranking/recharge_rank/recharge_rank_ctrl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -14,195 +15,171 @@ class ConsumeRank extends StatelessWidget {
       init: ConsumeRankCtrl(),
       builder: (ctrl) => Scaffold(
         backgroundColor: Colors.transparent,
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 10.w,
-                children: [
-                  _buildTopRankItem(
-                    context: context,
-                    name: "数据_00000...",
-                    likes: "372",
-                    rank: 2,
-                    crown: "assets/silver_crown.png", // 银冠图标
-                    avatar: "assets/avatar2.png", // 头像
-                    flag: "assets/silver_flag.png", // 银牌旗帜
-                  ),
+        body: ctrl.monthList.isNotEmpty?Container(
+          padding: EdgeInsets.only(left: 15.w,right: 15.w,top: 0,bottom: 0),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 10.w,
+                  children: [
+                    ...List.generate(ctrl.monthList.sublist(0,3).toList().length, (index){
+                      final item = ctrl.monthList[index];
+                      return  _buildTopRankItem(
+                        context: context,
+                        name: "${item.nickname}",
+                        rank: item.rank!,
+                        avatar: item.rank==1?"assets/images/1.png":item.rank==2?"assets/images/2.png":"assets/images/3.png", // 头像
+                        money: item.rank==1?"${ctrl.leaderboardResponse.rewardInfo!.firstPlace?.toStringAsFixed(0)}":item.rank==2?"${ctrl.leaderboardResponse.rewardInfo!.secondPlace?.toStringAsFixed(0)}":"${ctrl.leaderboardResponse.rewardInfo!.thirdPlace?.toStringAsFixed(0)}"
+                      );
+                    })
+                  ],
+                ),
+                SizedBox(height: 15.h),
+                ...List.generate(ctrl.monthList.sublist(4).toList().length, (index){
+                  final item = ctrl.monthList[index];
+                  return _buildRankItem(context, "${item.nickname}", item.rank!,item.totalComments!);
+                }).expand((e)=>[e,SizedBox(height: 15.h,)]).toList(),
+                // 分隔线
+                Divider(height: 1.h, thickness: 1, color: Colors.grey[300]),
+                SizedBox(height: 20.h),
 
-                  // TOP 1 - 金牌
-                  _buildTopRankItem(
-                    context: context,
-                    name: "搜索",
-                    likes: "463",
-                    rank: 1,
-                    crown: "assets/gold_crown.png", // 金冠图标
-                    avatar: "assets/avatar1.png", // 头像
-                    flag: "assets/gold_flag.png", // 金牌旗帜
-                  ),
-
-                  // TOP 3 - 铜牌
-                  _buildTopRankItem(
-                    context: context,
-                    name: "星日女孩",
-                    likes: "295",
-                    rank: 3,
-                    crown: "assets/bronze_crown.png", // 铜冠图标
-                    avatar: "assets/avatar3.png", // 头像
-                    flag: "assets/bronze_flag.png", // 铜牌旗帜
-                  ),
-                ],
-              ),
-              SizedBox(height: 15.h),
-              _buildRankItem(context, "宝友748769190", "64", 4),
-              SizedBox(height: 15.h),
-              _buildRankItem(context, "宝友840348154", "46", 5),
-              SizedBox(height: 15.h),
-              _buildRankItem(context, "冉冉_000000206", "40", 6),
-              SizedBox(height: 15.h),
-              _buildRankItem(context, "梦庭_000000040", "39", 7),
-              SizedBox(height: 20.h),
-
-              // 分隔线
-              Divider(height: 1.h, thickness: 1, color: Colors.grey[300]),
-              SizedBox(height: 20.h),
-
-              // 我的排名部分
-              _buildMyRankItem(context, "我的昵称", "我的点赞数", "我的排名"),
-
-              // 底部提示文字
-              Padding(
-                padding: EdgeInsets.only(top: 20.h, bottom: 30.h),
-                child: Text(
-                  "排名更新存在延时，请耐心等待自动更新 😊",
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: Colors.grey,
+                // 我的排名部分
+                 _buildMyRankItem(context, "${UserData().userResponse.userInfo?.nickname ??"--"}", "${ctrl.leaderboardResponse.currentUserStats?.totalComments ?? "0"}", "${ctrl.leaderboardResponse.currentUserRank ?? "--"}"),
+                // 底部提示文字
+                Padding(
+                  padding: EdgeInsets.only(top: 20.h, bottom: 30.h),
+                  child: Text(
+                    "排名更新存在延时，请耐心等待自动更新 😊",
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: Colors.grey,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ):Center(child: CircularProgressIndicator(),),
       ),
     );
   }
   Widget _buildTopRankItem({
     required BuildContext context,
     required String name,
-    required String likes,
     required int rank,
-    required String crown,
     required String avatar,
-    required String flag,
+    required String money,
   }) {
-    return Stack(
-      alignment: Alignment.topCenter,
-      children: [
-        // 奖旗背景
-        Positioned(
-          top: 40.h,
-          child: Image.asset(
-            flag,
-            width: 120.w,
-            height: 60.h,
-            fit: BoxFit.contain,
-          ),
-        ),
-
-        // 排名内容
-        Container(
-          margin: EdgeInsets.only(top: 10.h),
-          padding: EdgeInsets.fromLTRB(15.w, 50.h, 15.w, 15.h),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10.r),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              // 头像和皇冠
-              Stack(
-                alignment: Alignment.topCenter,
-                children: [
-                  // 头像框
-                  Container(
-                    width: 70.w,
-                    height: 70.w,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: _getRankColor(rank),
-                        width: 3.w,
-                      ),
-                    ),
-                    child: ClipOval(
-                      child: Image.asset(
-                        avatar,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  // 皇冠
-                  Positioned(
-                    top: -15.h,
-                    child: Image.asset(
-                      crown,
-                      width: 40.w,
-                      height: 40.h,
-                    ),
+    return Expanded(
+      child: Container(
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            // 排名内容
+            Container(
+              padding: EdgeInsets.fromLTRB(15.w, 30.h, 15.w, 15.h),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: Offset(0, 2),
                   ),
                 ],
               ),
-              SizedBox(height: 10.h),
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                      ),
+                      child: Text("${money.toString()}元",style: TextStyle(fontSize: 16.sp,fontWeight: FontWeight.w500,color: Colors.orange)),
+                    ),
+                  ),
+                  SizedBox(height: 10.h,),
+                  // 头像和皇冠
+                  Stack(
+                    alignment: Alignment.topCenter,
+                    children: [
+                      // 头像框
+                      Container(
 
-              // 排名文字
-              Text(
-                "TOP $rank",
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                  color: _getRankColor(rank),
-                ),
-              ),
-              SizedBox(height: 5.h),
+                        // decoration: BoxDecoration(
+                        //   shape: BoxShape.circle,
+                        //   border: Border.all(
+                        //     color: _getRankColor(rank),
+                        //     width: 3.w,
+                        //   ),
+                        // ),
+                        child: Image.asset(
+                          avatar,
+                          width: 70.w,
+                          height: 70.w,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      // 皇冠
+                      // Positioned(
+                      //   top: -15.h,
+                      //   child: Image.asset(
+                      //     crown,
+                      //     width: 40.w,
+                      //     height: 40.h,
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                  SizedBox(height: 10.h),
 
-              // 名称
-              Text(
-                name,
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              SizedBox(height: 5.h),
+                  // 排名文字
+                  Text(
+                    "TOP $rank",
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                      color: _getRankColor(rank),
+                    ),
+                  ),
+                  SizedBox(height: 5.h),
 
-              // 点赞数
-              Text(
-                likes,
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.orange,
-                ),
+                  // 名称
+                  Text(
+                    name,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 5.h),
+                ],
               ),
-            ],
-          ),
+            ),
+            Positioned(
+                top: 0,
+                right: 0,
+                child:Container(
+                  padding: EdgeInsets.symmetric(horizontal: 3.w,vertical: 5.h),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20.r)),
+                  ),
+                  child: Text("奖励",style: TextStyle(fontSize: 12.sp,fontWeight: FontWeight.w500,color: Colors.orange)),
+                )
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
-  Widget _buildRankItem(BuildContext context, String name, String likes, int rank) {
+  Widget _buildRankItem(BuildContext context, String name,int rank ,int totalComments) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.w),
       padding: EdgeInsets.all(15.w),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -232,25 +209,23 @@ class ConsumeRank extends StatelessWidget {
             ),
           ),
           SizedBox(width: 15.w),
-          // 名称
-          Expanded(
-            child: Text(
-              name,
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          // 点赞数
           Text(
-            likes,
+            name,
             style: TextStyle(
               fontSize: 16.sp,
-              fontWeight: FontWeight.bold,
-              color: Colors.orange,
+              fontWeight: FontWeight.w500,
             ),
           ),
+          // 名称
+          Spacer(),
+          Text(
+            "${totalComments}",
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+
         ],
       ),
     );
@@ -258,7 +233,7 @@ class ConsumeRank extends StatelessWidget {
 
   Widget _buildMyRankItem(BuildContext context, String name, String likes, String rank) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.w),
+      height: 70.h,
       padding: EdgeInsets.all(15.w),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -277,7 +252,20 @@ class ConsumeRank extends StatelessWidget {
           // 排名序号
           Container(
             width: 30.w,
-            alignment: Alignment.center,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "我的排行",
+              style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
+            ),
+          ),
+          SizedBox(width: 15.w),
+          Container(
+            width: 30.w,
+            alignment: Alignment.centerLeft,
             child: Text(
               rank,
               style: TextStyle(
@@ -291,7 +279,7 @@ class ConsumeRank extends StatelessWidget {
           // 名称
           Expanded(
             child: Text(
-              name,
+              "${name}",
               style: TextStyle(
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w500,
@@ -300,7 +288,7 @@ class ConsumeRank extends StatelessWidget {
           ),
           // 点赞数
           Text(
-            "点赞数 $likes",
+            "$likes",
             style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.bold,

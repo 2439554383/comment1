@@ -1,4 +1,5 @@
 ﻿import 'package:auto_size_text/auto_size_text.dart';
+import 'package:comment1/data/user_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
@@ -103,17 +104,34 @@ class AiChat extends StatelessWidget {
       margin: EdgeInsets.only(left: 15.w,right: 15.w,top: 0,bottom: 0),
       child: Column(
         children: [
-          ['生成菜单','查热量'].contains(ctrl.type)?GestureDetector(
-            onTap: () async{
-              ctrl.pickImage();
-            },
-            child: Container(
-              padding: EdgeInsets.only(bottom: 5),
-              width: MediaQuery.of(context).size.width,
+          ['生成菜单','查热量'].contains(ctrl.type)?Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                  padding: EdgeInsets.symmetric(horizontal: 25.w),
+                  alignment: Alignment.centerLeft,
+                  child: Text("内容由Ai生成")
+              ),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () async{
+                    ctrl.pickImage();
+                  },
+                  child: Container(
+                    padding: EdgeInsets.only(bottom: 5),
+                    width: MediaQuery.of(context).size.width,
+                    alignment: Alignment.centerRight,
+                    child: ctrl.hasImage?ClipRRect(borderRadius:BorderRadius.circular(10),child: Image.file(ctrl.file!,width: 45,height: 45,fit: BoxFit.cover,)):Icon(Icons.add_photo_alternate,size: 50,color: Theme.of(context).primaryColor,),
+                  ),
+                ),
+              ),
+            ],
+          ):Container(
+              padding: EdgeInsets.symmetric(horizontal: 25.w),
               alignment: Alignment.centerRight,
-              child: ctrl.hasImage?ClipRRect(borderRadius:BorderRadius.circular(10),child: Image.file(ctrl.file!,width: 45,height: 45,fit: BoxFit.cover,)):Icon(Icons.add_photo_alternate,size: 50,color: Theme.of(context).primaryColor,),
-            ),
-          ):SizedBox.shrink(),
+              child: Text("内容由Ai生成")
+          ),
+          SizedBox(height: 10.h,),
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
@@ -141,24 +159,33 @@ class AiChat extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                     borderSide: BorderSide(color: Colors.white),
                   ),
-                  suffixIcon: TextButton(style:ButtonStyle(backgroundColor: WidgetStatePropertyAll(Theme.of(context).primaryColor)),onPressed: (){
-                    ctrl.text = "";
-                    ctrl.isStart =true;
-                    FocusScope.of(context).unfocus();
-                    if(['姓名打分','起名','智能助手'].contains(ctrl.type)){
-                      ctrl.postText();
-                    }
-                    else if(['生成菜单','查热量'].contains(ctrl.type)){
-                      if(ctrl.image==null){
-                        showToast("请上传食物图");
-                      }
-                      else{
-                        ctrl.postImage();
-                        ctrl.hasImage = false;
-                        ctrl.textEditingController.clear();
-                      }
-                    }
-                  }, child: Text("发送",style: TextStyle(fontSize: 16.sp,fontWeight: FontWeight.w500,color: Colors.white)))
+                  suffixIcon: TextButton(
+                      style:ButtonStyle(backgroundColor: WidgetStatePropertyAll(Theme.of(context).primaryColor)),
+                      onPressed: (){
+                        if(UserData().isLogin){
+                          ctrl.text = "";
+                          ctrl.isStart =true;
+                          FocusScope.of(context).unfocus();
+                          if(['姓名打分','起名','智能助手'].contains(ctrl.type)){
+                            ctrl.postText();
+                          }
+                          else if(['生成菜单','查热量'].contains(ctrl.type)){
+                            if(ctrl.image==null){
+                              showToast("请上传食物图");
+                            }
+                            else{
+                              ctrl.postImage();
+                              ctrl.hasImage = false;
+                              ctrl.textEditingController.clear();
+                            }
+                          }
+                        }
+                        else{
+                          showToast("请您先登录");
+                        }
+                      },
+                      child: Text("发送",style: TextStyle(fontSize: 16.sp,fontWeight: FontWeight.w500,color: Colors.white))
+                  )
               ),
             ),
           ),

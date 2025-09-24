@@ -8,6 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart'as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../network/apis.dart';
+import '../network/dio_util.dart';
 class http_api{
   general_api(String url,String text,List selecttext_list,String count,StreamController streamcontroller) async{
     print("selecttext_list:$selecttext_list");
@@ -59,6 +62,7 @@ class http_api{
     final response = await request.send();
     if(response.statusCode == 200){
       print("请求成功");
+      point();
       response.stream
           .transform(utf8.decoder)
           .listen((chunk) {
@@ -76,6 +80,12 @@ class http_api{
       print('请求失败');
     }
   }
+  point() async {
+    final data = {
+      "template_id":1
+    };
+    final r = await HttpUtil().post(Api.point,data: data);
+  }
   post_text(String url,String text,String type,StreamController streamcontroller) async{
     final request = await http.Request(
       "POST",
@@ -87,6 +97,7 @@ class http_api{
     });
     final response = await request.send();
     if(response.statusCode == 200){
+      point();
       print("请求成功");
       response.stream
           .transform(utf8.decoder)

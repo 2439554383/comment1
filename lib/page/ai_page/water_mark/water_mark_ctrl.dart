@@ -1,5 +1,7 @@
 ﻿import 'dart:io';
 
+import 'package:comment1/old_network/apis.dart';
+import 'package:comment1/old_network/dio_util.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -11,6 +13,9 @@ import 'package:vision_gallery_saver/vision_gallery_saver.dart';
 
 import '../../../api/http_api.dart';
 import '../../../common/app_component.dart';
+import '../../../common/loading.dart';
+import '../../../network/apis.dart';
+import '../../../network/dio_util.dart';
 
 class WaterMarkCtrl extends GetxController {
   @override
@@ -30,6 +35,7 @@ class WaterMarkCtrl extends GetxController {
   var generatedVideo;
   var isinit;
   saveFile() async{
+    Loading.show();
     try{
       final response = await http.get(Uri.parse(generatedVideo));
       final temporary = await getTemporaryDirectory();
@@ -53,13 +59,24 @@ class WaterMarkCtrl extends GetxController {
     catch(e){
       print("${e}");
     }
+    Loading.dismiss();
   }
-  removeWatermark(var text) async{
-    generatedVideo = await http_api().post_aiimage("http://134.175.230.215:8005/comment/get_unmarkvideo/", text);
+  point() async {
+    final data = {
+      "template_id":1
+    };
+    final r = await HttpUtil().post(Api.point,data: data);
+  }
+  removeWatermark(String text) async{
+    final data = {
+      "text":text
+    };
+    final response = await OldHttpUtil().post(OldApi.removeMark,data: data);
+    generatedVideo = response.data;
     print(generatedVideo);
     update();
     if(generatedVideo!=null){
-      print(11111);
+      point();
       return generatedVideo;
     }
     else{
@@ -70,14 +87,18 @@ class WaterMarkCtrl extends GetxController {
     var text = textEditingController.text;
     textEditingController.clear();
     FocusScope.of(context).unfocus();
-    myFuture = removeWatermark(text).then((_) async {
-      if(generatedVideo!=null){
+    myFuture = () async {
+      await removeWatermark(text);
+
+      if (generatedVideo != null) {
         videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(generatedVideo));
         await videoPlayerController.initialize();
-        update();
+        update(); // GetX 刷新
       }
+
       return true;
-    });
+    }();
+
   }
   clear(){
     defaultWidget = Text("我是你的去水印助手");

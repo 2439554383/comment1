@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import '../../../../model/person/recharge_recoed.dart';
 import '../../../../network/apis.dart';
 import '../../../../network/dio_util.dart';
-
+import 'package:intl/intl.dart';
 class RechargeRecordCtrl extends GetxController {
   List<RechargeRecord> itemList = [];
 
@@ -12,6 +12,17 @@ class RechargeRecordCtrl extends GetxController {
   void onInit() {
     super.onInit();
     fetchRecords();
+  }
+
+
+  String formatDate(String? createdAt) {
+    if(createdAt!=null){
+      final date = DateTime.parse(createdAt);
+      return DateFormat('yyyy-MM-dd HH:mm').format(date);
+    }
+    else{
+      return "--";
+    }
   }
 
   Future<void> fetchRecords() async {

@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import '../common/app_preferences.dart';
 import '../common/loading.dart';
+import '../model/comment_type.dart';
 import '../network/apis.dart';
 import '../network/dio_util.dart';
 import '../util/event_bus.dart';
@@ -16,6 +17,7 @@ import '../util/event_bus.dart';
 class UserData {
   static UserData? _instance;
   List<String> stockHistoryList = [];
+  List<CommentType> typeList = [];
   bool isLogin = false;
   bool isFirstLogin = true;
   UserResponse userResponse = UserResponse();
@@ -40,21 +42,37 @@ class UserData {
       bool isFirstLogin = await AppPreferences.getBool("isFirstLogin") ?? true;
       if (isFirstLogin) {
         // 弹出教学弹窗
+
         showTeachingDialog();
 
         // 设置为已登录过，下次不再弹
-        await AppPreferences.setBool("isFirstLogin", false);
+
       }
     });
 
     showToast("登录成功");
+  }
+  saveFirstLogin() async {
+    isFirstLogin = false;
+    await AppPreferences.setBool("isFirstLogin", false);
+  }
+  saveTypeList(List<CommentType> list) {
+    typeList = list;
+    // 转成 Map 列表
+    final dataList = list.map((e) => e.toJson()).toList();
+
+    // 转成 String 存本地（因为 SharedPreferences 不能直接存 List<Map>）
+    final jsonString = jsonEncode(dataList);
+
+    // 存储
+    AppPreferences.setString(FStorageKey.typeList, jsonString);
   }
 
   void showTeachingDialog() {
     Get.dialog(
       AlertDialog(
         title: Text("欢迎使用"),
-        content: Text("这里是教学提示内容，可以告诉用户如何使用APP。"),
+        content: Text("请先注册并登录，然后点击主页可以开始使用我们的工具啦~"),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
@@ -110,6 +128,16 @@ class UserData {
       if(userResponseValue!=null){
         userResponse = UserResponse.fromJson(json.decode(userResponseValue));
       }
+      final jsonString = AppPreferences.getString(FStorageKey.typeList);
+      print("jsonString${jsonString}");
+      if (jsonString == null || jsonString.isEmpty) {
+        return [];
+      }
+
+      final List<dynamic> jsonData = jsonDecode(jsonString);
+      print("jsonData${jsonData}");
+      typeList =  jsonData.map((e) => CommentType.fromJson(e)).toList();
+      print("typeList${typeList}");
     }
   }
 

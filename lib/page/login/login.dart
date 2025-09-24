@@ -34,7 +34,7 @@ class Login extends StatelessWidget with FormValidationMixin{
           ],
         ),
         body: Form(
-          key: ctrl.formKey,
+          key: ctrl.formKeyLogin,
           child: Container(
             padding: EdgeInsets.all(15.r),
             child: Column(
@@ -123,7 +123,7 @@ class Login extends StatelessWidget with FormValidationMixin{
       ),
       child: TextButton(
           onPressed: (){
-            if(ctrl.formKey.currentState!.validate()){
+            if(ctrl.formKeyLogin.currentState!.validate()){
               ctrl.login();
             }
           },

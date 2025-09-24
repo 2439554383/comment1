@@ -12,6 +12,9 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import '../../../common/app_component.dart';
+import '../../../data/user_data.dart';
 class VoiceClone extends StatelessWidget {
   const VoiceClone({super.key});
 
@@ -20,6 +23,7 @@ class VoiceClone extends StatelessWidget {
     return GetBuilder(
       init: VoiceCloneCtrl(),
       builder: (VoiceCloneCtrl ctrl) => Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: Text("声音克隆"),
           backgroundColor: Colors.white,
@@ -30,7 +34,7 @@ class VoiceClone extends StatelessWidget {
           color: Colors.white,
           padding: EdgeInsets.all(16.w),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               // 标题
               Text(
@@ -40,26 +44,39 @@ class VoiceClone extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 16.h),
-
+              SizedBox(height: 20.h,),
               // 录音/上传区域
               _buildUploadSection(context, ctrl),
-              SizedBox(height: 24.h),
-
-              // 识别文本
-              _buildRecognitionText(ctrl),
-              SizedBox(height: 24.h),
-
+              SizedBox(height: 20.h,),
               // 生成区域
               _buildGenerateSection(context, ctrl),
-              SizedBox(height: 24.h),
-
+              SizedBox(height: 20.h,),
               // 上传本地音频按钮
               _buildUploadLocalAudio(context, ctrl),
-              Spacer(),
+              SizedBox(height: 20.h,),
 
-              // 生成按钮
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.r),
+                  border: Border.all(color: CupertinoColors.secondarySystemBackground)
+                ),
+                child: TextFormField(
+                  controller: ctrl.textEditingController,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 15.w),
+                    hintText: "请输入要克隆的文本",
+                    border: InputBorder.none
+                  ),
+                ),
+              ),
+              SizedBox(height: 20.h,),
+              Container(
+                  alignment: Alignment.centerRight,
+                  child: Text("音频由Ai生成")
+              ),
+              SizedBox(height: 10.h,),
               _buildGenerateButton(context, ctrl),
+              SizedBox(height: 20.h,),
             ],
           ),
         ),
@@ -116,6 +133,13 @@ class VoiceClone extends StatelessWidget {
               color: Colors.grey[600],
             ),
           ),
+          ctrl.path!=null?Text(
+            "录制成功，可选择本地音频试听",
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: Colors.grey[600],
+            ),
+          ):SizedBox.shrink(),
         ],
       ),
     );
@@ -185,38 +209,33 @@ class VoiceClone extends StatelessWidget {
   }
 
   Widget _buildGenerateSection(BuildContext context, VoiceCloneCtrl ctrl) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "试听语音",
-          style: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.bold,
+    return Container(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "试听语音",
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-        ),
-        SizedBox(height: 12.h),
-
-        if (ctrl.sourceVoice != null)
-          _buildAudioPlayer(context, ctrl, true),
-        SizedBox(height: 12.h),
-
-        if (ctrl.generatedVoiceUrl != null)
-          _buildAudioPlayer(context, ctrl, false),
-
-        if (ctrl.sourceVoice == null && ctrl.generatedVoiceUrl == null)
+          SizedBox(height: 12.h),
+          ctrl.path!=null?_buildAudioPlayer(context, ctrl, false):SizedBox.shrink(),
           Text(
             "上传语音样本或生成语音后，可以在这里试听",
             style: TextStyle(fontSize: 14.sp, color: Colors.grey),
           ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildAudioPlayer(BuildContext context, VoiceCloneCtrl ctrl, bool isSource) {
-    final isPlaying = isSource ? ctrl.isSourcePlaying : ctrl.isGeneratedPlaying;
-    final audioUrl = isSource ? ctrl.sourceVoice?.path : ctrl.generatedVoiceUrl;
-
     return Container(
       padding: EdgeInsets.all(12.w),
       decoration: BoxDecoration(
@@ -225,46 +244,46 @@ class VoiceClone extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // 播放按钮
           IconButton(
-            icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
-            onPressed: isSource ? ctrl.playSource : ctrl.playGenerated,
+            icon: Icon(ctrl.isPlaying ? Icons.pause : Icons.play_arrow),
+            onPressed:(){
+              print(ctrl.isComplete);
+              if(ctrl.isPlaying && ctrl.isComplete==false){
+                ctrl.pause();
+              }
+              else if(!ctrl.isPlaying && ctrl.isComplete==false){
+                ctrl.play();
+              }
+              else{
+                ctrl.rePlay();
+              }
+            },
           ),
           SizedBox(width: 12.w),
-
-          // 进度条
           Expanded(
             child: StreamBuilder<Duration>(
-              stream: isSource ?
-              ctrl.sourcePlayer.positionStream :
-              ctrl.generatedPlayer.positionStream,
+              stream:ctrl.player.positionStream,
               builder: (context, snapshot) {
                 final position = snapshot.data ?? Duration.zero;
-                final duration = isSource ?
-                (ctrl.audioDuration ?? Duration.zero) :
-                (ctrl.generatedPlayer.duration ?? Duration.zero);
-
+                final duration = ctrl.audioDuration ?? Duration.zero;
                 return ProgressBar(
                   progress: position,
                   total: duration,
                   onSeek: (newPosition) {
-                    if (isSource) {
-                      ctrl.sourcePlayer.seek(newPosition);
-                    } else {
-                      ctrl.generatedPlayer.seek(newPosition);
-                    }
+                    ctrl.player.seek(newPosition);
                   },
                 );
               },
             ),
           ),
-
-          if (!isSource) ...[
+          if (ctrl.hasData) ...[
             SizedBox(width: 12.w),
             // 下载按钮
             IconButton(
               icon: Icon(Icons.download),
-              onPressed: ctrl.saveGeneratedAudio,
+              onPressed: (){
+                ctrl.dowload();
+              },
             ),
           ],
         ],
@@ -313,7 +332,7 @@ class VoiceClone extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                child: Text("选择本地音频文件"),
+                child: Text("选择本地音频"),
               ),
             ),
             SizedBox(width: 20.w,),
@@ -344,9 +363,13 @@ class VoiceClone extends StatelessWidget {
       width: double.infinity,
       child: ElevatedButton(
         onPressed: () {
-          if (ctrl.textEditingController.text.isNotEmpty) {
-            ctrl.myFuture = ctrl.generateVoice(ctrl.textEditingController.text);
-            ctrl.update();
+          if(UserData().isLogin){
+            if (ctrl.textEditingController.text.isNotEmpty) {
+              ctrl.getAudio(context);
+            }
+          }
+          else{
+            showToast("请您先登录");
           }
         },
         style: ElevatedButton.styleFrom(
@@ -356,15 +379,60 @@ class VoiceClone extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        child: Text(
-          "开始生成",
-          style: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+        child: FutureBuilder(
+            future: ctrl.myFuture,
+            builder: (context,snapshot){
+              if(snapshot.connectionState==ConnectionState.none){
+                return Text(
+                  "开始生成",
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                );
+              }
+              else if(snapshot.connectionState==ConnectionState.waiting){
+                ctrl.animationController.repeat();
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AnimatedBuilder(
+                      animation: ctrl.animationController,
+                      builder: (BuildContext context, Widget? child) {
+                        return Transform.rotate(
+                          angle: ctrl.animationController.value * 2 * 3.1415926,
+                          child: Container(
+                            child: Center(
+                              child: RotatedBox(
+                                quarterTurns: 1,
+                                child: Icon(Icons.autorenew, size: 25,color: Colors.white,),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    SizedBox(width: 5.w),
+                    Text("正在合成中")
+                  ],
+                );
+              }
+              else {
+                ctrl.animationController.stop();
+                return Text(
+                  "开始生成",
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                );
+              }
+            }
         ),
       ),
     );
   }
 }
+

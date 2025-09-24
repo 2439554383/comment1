@@ -36,6 +36,7 @@ class PersonalCenterCtrl extends GetxController with GetSingleTickerProviderStat
     "我的分销",
     "充值记录",
     "修改密码",
+    "隐私政策",
     "退出登录"
   ];
   late List<dynamic> itemFunc = [
@@ -45,6 +46,7 @@ class PersonalCenterCtrl extends GetxController with GetSingleTickerProviderStat
     () => { Froute.push(Froute.distribution,arguments: {"userInfo":userInfo})},
     () => {  Froute.push(Froute.rechargeRecord) },
     () => { Froute.push(Froute.accountSecurity)},
+    () => { Froute.push(Froute.privacy_policy)},
     () => {  UserData().logOut() }
   ];
 

@@ -52,18 +52,32 @@ class RechargeRecordPage extends StatelessWidget {
                         ),
                         SizedBox(height: 5.h),
                         Text(
-                          "到账时间：${item.createdAt ?? "--"}",
+                          "到账时间：${ctrl.formatDate(item.createdAt) ?? "--"}",
                           style: TextStyle(fontSize: 12.sp, color: Colors.grey),
                         ),
                       ],
                     ),
-                    Text(
-                      "¥${item.amount?.toStringAsFixed(2) ?? '0.00'}",
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "￥${item.amount?.toStringAsFixed(2) ?? '0.00'}",
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                        ),
+                        SizedBox(height: 5.h),
+                        Text(
+                          "${item.status=="pending"?"未完成":"已完成"}",
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

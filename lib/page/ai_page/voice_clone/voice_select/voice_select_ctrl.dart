@@ -60,6 +60,7 @@ class VoiceSelectCtrl extends GetxController {
   void togglePlayback() async {
     if (audioFile == null) {
       // 如果没有音频文件，使用示例音频或提示用户
+      Get.closeAllSnackbars();
       Get.snackbar("提示", "请先选择音频文件");
       return;
     }

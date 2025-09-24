@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:comment1/data/user_data.dart';
 import 'package:comment1/page/ai_page/ai_chat/ai_chat_ctrl.dart';
 import 'package:comment1/page/home/home_ctrl.dart';
 import 'package:comment1/route/route.dart';
@@ -9,8 +10,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:marquee/marquee.dart';
-import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
+
+import '../../common/app_component.dart';
 class Home extends StatelessWidget {
   const Home({super.key});
 
@@ -37,7 +39,7 @@ class Home extends StatelessWidget {
                 children: [
                   SizedBox(height: 15.h,),
                   homeHeader(context, ctrl),
-                  SizedBox(height: 15.h,),
+                  SizedBox(height: 25.h,),
                   notice(context, ctrl),
                   SizedBox(height: 25.h,),
                   carousel(context, ctrl),
@@ -47,7 +49,7 @@ class Home extends StatelessWidget {
                   commentButton(context, ctrl),
                   SizedBox(height: 20.h,),
                   aiButton(context, ctrl),
-                  SizedBox(height: 20.h,),
+                  SizedBox(height: 25.h,),
                   ...functionListView(context, ctrl),
                   SizedBox(height: 20.h,),
                 ],
@@ -125,18 +127,22 @@ class Home extends StatelessWidget {
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
+          crossAxisCount: 1,
           mainAxisSpacing: 10,
           crossAxisSpacing: 10,
+          childAspectRatio:5/1,
         ),
         itemCount: ctrl.iconList.length,
         itemBuilder: (context,index){
           return GestureDetector(
             onTap: ctrl.routeList[index],
+            behavior: HitTestBehavior.opaque,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Expanded(child: FittedBox(child:ctrl.iconList[index],)),
-                Expanded(child: AutoSizeText(ctrl.textList[index],style: TextStyle(color: Colors.black),maxLines: 1,minFontSize: 8,))
+                FittedBox(child:ctrl.iconList[index],),
+                SizedBox(height: 10.h,),
+                AutoSizeText(ctrl.textList[index],style: TextStyle(color: Colors.black),maxLines: 1,minFontSize: 8,)
               ],
             ),
           );
@@ -149,133 +155,139 @@ class Home extends StatelessWidget {
       height: 100.h,
       child: ElevatedButton(
         onPressed: () {
-          showDialog(
-              context: context,
-              builder: (context){
-                return Dialog(
-                  backgroundColor: Colors.white,
-                  child: GetBuilder(
-                    init: ctrl,
-                    builder: (HomeCtrl ctrl)=>
-                     Container(
-                      width: 250.w,
-                      height: 200.h,
-                      padding: EdgeInsets.all(20.r),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+          if(UserData().isLogin){
+            showDialog(
+                context: context,
+                builder: (context){
+                  return Dialog(
+                    backgroundColor: Colors.white,
+                    child: GetBuilder(
+                      init: ctrl,
+                      builder: (HomeCtrl ctrl)=>
                           Container(
-                            width: double.infinity,
-                            height: 50.h,
-                            child: ElevatedButton(
-                              style: ButtonStyle(
-                                  backgroundColor: WidgetStatePropertyAll(ctrl.openOverlay?Theme.of(context).primaryColor:Colors.grey),
-                                  shape: WidgetStatePropertyAll(
-                                      RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(40.r)
-                                      )
-                                  )
-                              ),
-                              onPressed: () async{
-                                if(ctrl.openOverlay == false){
-                                  final isgranted = await FlutterOverlayWindow.isPermissionGranted();
-                                  if(!isgranted){
-                                    await FlutterOverlayWindow.requestPermission();
-                                    final isgranted1 = await FlutterOverlayWindow.isPermissionGranted();
-                                    if(!isgranted1){
-                                      showDialog(context: context, builder: (context){
-                                        return AlertDialog(
-                                          title: Text("提示"),
-                                          content: Text("请前往系统设置中手动开启“悬浮窗权限"),
-                                          actions: [
-                                            TextButton(onPressed: (){
-                                              FlutterOverlayWindow.requestPermission();
-                                              Navigator.pop(context);
-                                            }, child: Text("前往")),
-                                            TextButton(onPressed: (){
-                                              Navigator.pop(context);
-                                            }, child: Text("取消"))
-                                          ],
-                                        );
-                                      });
-                                    }
-                                  }
-                                  else{
-                                    Navigator.pop(context);
-                                    await FlutterOverlayWindow.showOverlay(
-                                      width: 150.w,
-                                      height: 150.h,
-                                      enableDrag: false,
-                                      alignment :OverlayAlignment.topRight,
-                                      positionGravity: PositionGravity.auto,
-                                      startPosition: OverlayPosition(0,MediaQuery.of(context).size.height/8),
-                                    );
-                                    await FlutterOverlayWindow.shareData({
-                                      "type":"listview",
-                                      // "type_overlay_list":ctrl.cu,
-                                    });
-                                    ctrl.openOverlay = true;
-                                    ctrl.update();
-                                  }
-                                }
-                                else{
-                                  ctrl.openOverlay = false;
-                                  await FlutterOverlayWindow.closeOverlay();
-                                  await FlutterOverlayWindow.shareData({
-                                    "type":"switch_window"
-                                  });
-                                }
-                                ctrl.update();
-                              },
-                              child: ctrl.openOverlay?Row(
-                                spacing: 15,
-                                children: [
-                                  SizedBox(),
-                                  Icon(CupertinoIcons.checkmark_alt_circle,size: 35,),
-                                  Text("关闭悬浮窗",style: TextStyle(fontSize: 20),)
-                                ],
-                              ):Row(
-                                spacing: 15,
-                                children: [
-                                  SizedBox(),
-                                  Icon(Icons.block,size: 35,),
-                                  Text("开启悬浮窗",style: TextStyle(fontSize: 20),)
-                                ],
-                              ),
+                            width: 250.w,
+                            height: 200.h,
+                            padding: EdgeInsets.all(20.r),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: double.infinity,
+                                  height: 50.h,
+                                  child: ElevatedButton(
+                                    style: ButtonStyle(
+                                        backgroundColor: WidgetStatePropertyAll(ctrl.openOverlay?Theme.of(context).primaryColor:Colors.grey),
+                                        shape: WidgetStatePropertyAll(
+                                            RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(40.r)
+                                            )
+                                        )
+                                    ),
+                                    onPressed: () async{
+                                      if(ctrl.openOverlay == false){
+                                        final isgranted = await FlutterOverlayWindow.isPermissionGranted();
+                                        if(!isgranted){
+                                          await FlutterOverlayWindow.requestPermission();
+                                          final isgranted1 = await FlutterOverlayWindow.isPermissionGranted();
+                                          if(!isgranted1){
+                                            showDialog(context: context, builder: (context){
+                                              return AlertDialog(
+                                                title: Text("提示"),
+                                                content: Text("请前往系统设置中手动开启“悬浮窗权限"),
+                                                actions: [
+                                                  TextButton(onPressed: (){
+                                                    FlutterOverlayWindow.requestPermission();
+                                                    Navigator.pop(context);
+                                                  }, child: Text("前往")),
+                                                  TextButton(onPressed: (){
+                                                    Navigator.pop(context);
+                                                  }, child: Text("取消"))
+                                                ],
+                                              );
+                                            });
+                                          }
+                                        }
+                                        else{
+                                          Navigator.pop(context);
+                                          await FlutterOverlayWindow.showOverlay(
+                                            width: 150.w,
+                                            height: 150.h,
+                                            enableDrag: false,
+                                            alignment :OverlayAlignment.topRight,
+                                            positionGravity: PositionGravity.auto,
+                                            startPosition: OverlayPosition(0,MediaQuery.of(context).size.height/8),
+                                          );
+                                          await ctrl.updateList();
+                                          await FlutterOverlayWindow.shareData({
+                                            "type":"listview",
+                                            "type_overlay_list":ctrl.cueList,
+                                          });
+                                          ctrl.openOverlay = true;
+                                          ctrl.update();
+                                        }
+                                      }
+                                      else{
+                                        ctrl.openOverlay = false;
+                                        await FlutterOverlayWindow.closeOverlay();
+                                        await FlutterOverlayWindow.shareData({
+                                          "type":"switch_window"
+                                        });
+                                      }
+                                      ctrl.update();
+                                    },
+                                    child: ctrl.openOverlay?Row(
+                                      spacing: 15,
+                                      children: [
+                                        SizedBox(),
+                                        Icon(CupertinoIcons.checkmark_alt_circle,size: 35,),
+                                        Text("关闭悬浮窗",style: TextStyle(fontSize: 20),)
+                                      ],
+                                    ):Row(
+                                      spacing: 15,
+                                      children: [
+                                        SizedBox(),
+                                        Icon(Icons.block,size: 35,),
+                                        Text("开启悬浮窗",style: TextStyle(fontSize: 20),)
+                                      ],
+                                    ),
 
+                                  ),
+                                ),
+                                SizedBox(height: 20.h,),
+                                Container(
+                                  height: 50.h,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Froute.push(Froute.settingCue);
+                                    },
+                                    style: ButtonStyle(
+                                        backgroundColor: WidgetStatePropertyAll(Theme.of(context).primaryColor),
+                                        shape: WidgetStatePropertyAll(
+                                            RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(40.r)
+                                            )
+                                        )
+                                    ),
+                                    child: Row(
+                                      spacing: 15.w,
+                                      children: [
+                                        SizedBox(),
+                                        Icon(CupertinoIcons.settings_solid,size: 35.r,),
+                                        Text("设置提示词",style: TextStyle(fontSize: 20.sp),)
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
                             ),
                           ),
-                          SizedBox(height: 20.h,),
-                          Container(
-                            height: 50.h,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Froute.push(Froute.settingCue);
-                              },
-                              style: ButtonStyle(
-                                  backgroundColor: WidgetStatePropertyAll(Theme.of(context).primaryColor),
-                                  shape: WidgetStatePropertyAll(
-                                      RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(40.r)
-                                      )
-                                  )
-                              ),
-                              child: Row(
-                                spacing: 15.w,
-                                children: [
-                                  SizedBox(),
-                                  Icon(CupertinoIcons.settings_solid,size: 35.r,),
-                                  Text("设置提示词",style: TextStyle(fontSize: 20.sp),)
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
                     ),
-                  ),
-                );
-              });
+                  );
+                });
+          }
+          else{
+            showToast("请您先登录");
+          }
         },
         style: ButtonStyle(
             backgroundColor: WidgetStatePropertyAll(Theme.of(context).primaryColor),

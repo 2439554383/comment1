@@ -36,9 +36,13 @@ showPicker<T>(List<T> pickerData, Function(List<T> selecteds) confirm) {
 }
 
 
-showToast(String? m){
+showToast(String? m ){
   Fluttertoast.cancel();
   Fluttertoast.showToast(msg: m??"",gravity: ToastGravity.CENTER);
+}
+showCustomToast(String? m,ToastGravity position){
+  Fluttertoast.cancel();
+  Fluttertoast.showToast(msg: m??"",gravity: position);
 }
 
 void showKeyboard(BuildContext context) {

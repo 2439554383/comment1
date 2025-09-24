@@ -7,6 +7,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
+import '../../../common/app_component.dart';
+import '../../../data/user_data.dart';
+
 class WaterMark extends StatelessWidget {
   const WaterMark({super.key});
 
@@ -131,7 +134,12 @@ class WaterMark extends StatelessWidget {
             suffixIcon: TextButton(
                 style:ButtonStyle(backgroundColor: WidgetStatePropertyAll(Theme.of(context).primaryColor)),
                 onPressed: () async{
-                    ctrl.setFuture(context);
+                    if(UserData().isLogin){
+                      ctrl.setFuture(context);
+                    }
+                    else{
+                      showToast("请您先登录");
+                    }
                   },
                 child: AutoSizeText("去水印",style: TextStyle(fontSize: 16.sp,fontWeight: FontWeight.w500,color: Colors.white)))
         ),

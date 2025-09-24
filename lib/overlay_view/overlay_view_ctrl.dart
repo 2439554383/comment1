@@ -1,16 +1,46 @@
 ﻿import 'dart:async';
+import 'dart:convert' show utf8;
 import 'dart:math';
+import 'package:comment1/data/user_data.dart';
+import 'package:comment1/old_network/apis.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:get/get.dart';
 import '../api/http_api.dart';
+import '../common/app_preferences.dart';
+import '../model/comment_type.dart';
+import '../network/apis.dart';
+import '../network/dio_util.dart';
+import '../old_network/dio_util.dart';
 
 class OverlayViewCtrl extends GetxController {
+  Future<String>? future_comment;
+  String text  = "";
+  String content = "";
+  bool isTrue = false;
+  bool openDetail = false;
+  bool hasList = false;
+  late List<CommentType> typeList=[];
+  late List<CommentType> selectList=[];
+  late List wordList=[];
+  late List commentList = [];
+  late List contentlist = [
+    "哈哈哈哈,好笑",
+    "理解吗?!"
+  ];
+  static const overlayChannel = MethodChannel('com.example.message1');
+  late TextEditingController textEditingController = TextEditingController();
+  late TextEditingController textEditingController1 = TextEditingController();
+  late TextEditingController tcCount = TextEditingController();
+  late TextEditingController textEditingController3 = TextEditingController();
+  StreamController streamController = StreamController.broadcast()..close();
   @override
   void onInit() {
     super.onInit();
+    print("onerlay初始化");
     final listen1 = FlutterOverlayWindow.overlayListener.listen((event) async {
       print("Current_event:$event");
       if(event["type"] == "switch_window"){
@@ -18,19 +48,14 @@ class OverlayViewCtrl extends GetxController {
       }
       else if(event["type"] == "listview"){
         print("listview");
-        wordList = event['type_overlay_list'];
-      }
-      else if(event["type"] == "size"){
-        // print('listview:$event');
-        // setState(() {
-        //   final heig = event["size"];
-        //   final heig1 = event["size1"];
-        //   print("heig:$heig");
-        //   fullheight = heig.toDouble();
-        //   print("heig1:$heig1");
-        //   fullheight1 = heig1.toDouble();
-        // });
-        // listview_provider.type_overlay_list = event['type_overlay_list'] ?? [];
+        final rawList = event['type_overlay_list'] as List? ?? [];
+        final List<CommentType> types =
+        rawList.map((e) => CommentType.fromJson(e)).toList();
+        typeList = types;
+        selectList = List.from(typeList);
+        print("listlist${selectList}");
+        hasList = true;
+        update();
       }
     });
     overlayChannel.setMethodCallHandler((call) async {
@@ -182,27 +207,9 @@ class OverlayViewCtrl extends GetxController {
 
     Overlay.of(context).insert(entry);
     Future.delayed(const Duration(seconds: 3), () => entry.remove());
+
   }
 
-  Future<String>? future_comment;
-  String text  = "";
-  String content = "";
-  bool isTrue = false;
-  bool openDetail = false;
-  bool hasList = false;
-  late List typeList=[];
-  late List wordList=[];
-  late List commentList = [];
-  late List contentlist = [
-    "哈哈哈哈,好笑",
-    "理解吗?!"
-  ];
-  static const overlayChannel = MethodChannel('com.example.message1');
-  late TextEditingController textEditingController = TextEditingController();
-  late TextEditingController textEditingController1 = TextEditingController();
-  late TextEditingController textEditingController2 = TextEditingController();
-  late TextEditingController textEditingController3 = TextEditingController();
-  StreamController streamController = StreamController.broadcast()..close();
   copy() async {
     content = textEditingController.text;
     try {
@@ -211,6 +218,7 @@ class OverlayViewCtrl extends GetxController {
       print("发送失败: ${e.message}");
     }
   }
+
   paste() async {
     try {
       final result = await overlayChannel.invokeMethod<String>('get_board');
@@ -230,73 +238,84 @@ class OverlayViewCtrl extends GetxController {
       print("发送失败: ${e.message}");
     }
   }
-  postComment() {
-      List post_list= [];
-      commentList.add(textEditingController1.text);
-      post_list = List.from(commentList);
-      commentList.remove(textEditingController1.text);
-      final url = textEditingController.text;
-      future_comment = getComment(url,post_list,textEditingController2.text);
-      textEditingController.clear();
-      update();
-  }
-  Future<String> getComment(String text,List comment_list1,String count)async{
-    streamController = StreamController.broadcast();
-    content = await http_api().general_api("http://134.175.230.215:8005/comment/get_comment/", text, comment_list1,count,streamController);
+
+  changeStatus(int index){
+    selectList[index].check();
     update();
-    return content;
+  }
+
+  postComment() async{
+    streamController = StreamController.broadcast();
+    update();
+    List<String> postList = selectList
+        .where((e) => e.isCheck==true)
+        .map((e) => e.typeName)
+        .toList();
+    postList.add(textEditingController1.text);
+    final url = textEditingController.text;
+    textEditingController.clear();
+    final data = {
+      "selecttext_list": postList,
+      "count": tcCount.text,
+      "url":url
+    };
+    final response = await OldHttpUtil().postStream(OldApi.getComment,data: data);
+    if(response.code==200){
+      point();
+      final streamData = response.data.stream;
+      print("response:${response}");
+      print("responseCode:${response.code}");
+      streamData.listen((chunk) {
+        // 确保 chunk 是 List<int> 类型
+        if (chunk is Uint8List) {
+          // Uint8List 是 List<int> 的子类，可以直接使用
+          print("接收到片段1：$chunk");
+          if (!streamController.isClosed) {
+            streamController.add(chunk);
+          }
+        }
+      }).onDone(() {
+        if (!streamController.isClosed) {
+          streamController.close();
+        }
+        print("传输结束，数据流关闭");
+      });
+    }
+    else{
+      streamController.addError("生成失败");
+    }
+    update();
+  }
+
+  reset(){
+    selectList.forEach((e)=>e.isCheck=false);
+    update();
+  }
+  clear(){
+    textEditingController.clear();
+    textEditingController1.clear();
+    tcCount.clear();
+    textEditingController3.clear();
+    reset();
+  }
+  point() async {
+    final data = {
+      "template_id":1
+    };
+    final r = await HttpUtil().post(Api.point,data: data);
   }
   closeWindows()async{
     FlutterOverlayWindow.disposeOverlayListener();
     await FlutterOverlayWindow.closeOverlay();
   }
+
   switchWindows(bool opendetail){
     openDetail = opendetail;
     update();
   }
+
   openOverlay(bool isoverlay){
     update();
   }
-  get_list(String code) async{
-    final data =  await http_api().all_api("http://134.175.230.215:8005/comment/get_listmodel/",code);
-    if(data["status"] ==true){
-      print("获取列表中");
-      typeList  = data['type_list'];
-      wordList  = data['type_overlay_list'];
-      update();
-    }
-    else{
-      print("获取列表失败！！！！！！！！！！！！！");
-    }
 
-  }
-  // overlay_list(){
-  //
-  // }
-  // switch_type_isset(bool istrue,int index) async{
-  //   _list_view_model.type_list[index][2] = istrue;
-  //   update();
-  // }
-  // switch_type_isset1(bool istrue,int index) async{
-  //   _list_view_model.type_overlay_list[index][3] = istrue;
-  //   if(istrue == true){
-  //     _list_view_model.comment_list.add(type_overlay_list[index][1]);
-  //   }
-  //   else{
-  //     _list_view_model.comment_list.remove(type_overlay_list[index][1]);
-  //   }
-  //   print(_list_view_model.comment_list);
-  //   update();
-  // }
-  // reset(){
-  //   for(int i = 0; i<_list_view_model.type_overlay_list.length;i++){
-  //     _list_view_model.type_overlay_list[i][3] = false;
-  //   }
-  //   comment_list.clear();
-  //   update();
-  // }
-  // switch_comfirm(String? code) async{
-  //   await http_api().switch_api("http://134.175.230.215:8005/comment/switch_isset/",_list_view_model.type_list,code!);
-  //   update();
-  // }
 }

@@ -30,20 +30,23 @@ class Ranking extends StatelessWidget {
                     padding: EdgeInsets.all(20.r),
                     controller: ctrl.tabController,
                     dividerColor: Colors.transparent,
+                    labelStyle: TextStyle(fontSize: 25.sp,color: Colors.white),
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicatorColor: Colors.transparent,
                     tabs: [
+                      // Container(
+                      //     padding: EdgeInsets.all(10.r),
+                      //     child: Text("日榜")),
                       Container(
                           padding: EdgeInsets.all(10.r),
-                          child: Text("日榜")),
-                      Container(
-                          padding: EdgeInsets.all(10.r),
-                          child: Text("月榜")),
+                          child: Text("评论数月榜")),
                     ],
                   ),
                   Expanded(
                     child: TabBarView(
                       controller: ctrl.tabController,
                       children: [
-                        RechargeRank(),
+                        // RechargeRank(),
                         ConsumeRank(),
                       ],
                     ),

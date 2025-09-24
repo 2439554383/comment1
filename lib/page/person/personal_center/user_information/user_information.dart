@@ -12,6 +12,7 @@ class UserInformation extends StatelessWidget {
     return GetBuilder<UserInformationCtrl>(
       init: UserInformationCtrl(),
       builder: (ctrl) => Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: AutoSizeText("用户信息"),
         ),

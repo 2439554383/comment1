@@ -1,6 +1,7 @@
 ﻿import 'package:comment1/page/ai_page/ai_face/ai_face.dart';
 import 'package:comment1/page/home/home.dart';
 import 'package:comment1/page/person/personal_center/open_member/open_member.dart';
+import 'package:comment1/page/person/personal_center/privacy_policy/privacy_policy.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import '../overlay_view/overlay_view.dart';
@@ -63,6 +64,8 @@ class Froute{
   static const String home = '/home';
   static const String tabPage = '/tabPage';
   static const String open_member = '/open_member';
+  static const String privacy_policy = '/privacy_policy';
+
 
   static List<GetPage> getPages = [
     GetPage(name: aiImage, page: () => AiImage()),
@@ -92,6 +95,8 @@ class Froute{
     GetPage(name: voiceSelect, page: () => VoiceSelect()),
     GetPage(name: userAccount, page: () => UserAccount()),
     GetPage(name: open_member, page: () => OpenMember()),
+    GetPage(name: privacy_policy, page: () => PrivacyPolicy()),
+
   ];
 
   static push(String name,{arguments, Function(dynamic)? result}){

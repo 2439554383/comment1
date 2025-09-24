@@ -1,4 +1,6 @@
 ﻿import 'package:auto_size_text/auto_size_text.dart';
+import 'package:comment1/common/app_component.dart';
+import 'package:comment1/data/user_data.dart';
 import 'package:comment1/mixin/color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,16 +28,12 @@ class AiFace extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height: 20.h,),
-                sourceImage(context, ctrl),
-                SizedBox(height: 30.h,),
-                changeIcon(context, ctrl),
-                SizedBox(height: 30.h,),
-                faceImage(context, ctrl),
-                SizedBox(height: 20.h,),
-                // generatedImage(context, ctrl),
-                // SizedBox(height: 20.h,),
-                SizedBox(height: 40.h,),
+                generatedImage(context, ctrl),
+                Container(
+                    alignment: Alignment.centerRight,
+                    child: Text("内容由Ai生成")
+                ),
+                SizedBox(height: 10.h,),
                 nextButton(context, ctrl),
                 SizedBox(height: 40.h,),
               ],
@@ -64,6 +62,8 @@ class AiFace extends StatelessWidget {
           ctrl.sourceImage,
           width: double.infinity,
           height: double.infinity,
+          // color: ctrl.isChanging?Colors.black.withOpacity(0.5):null,
+          colorBlendMode: BlendMode.dstATop,
           fit: BoxFit.cover,):AutoSizeText("上传模版图"),
       ),
     );
@@ -92,6 +92,8 @@ class AiFace extends StatelessWidget {
             ctrl.faceImage,
             width: double.infinity,
             height: double.infinity,
+            // color: ctrl.isChanging?Colors.black.withOpacity(0.5):null,
+            colorBlendMode: BlendMode.dstATop,
             fit: BoxFit.cover,
         ):AutoSizeText("上传人脸图"),
       ),
@@ -99,26 +101,65 @@ class AiFace extends StatelessWidget {
   }
   
   Widget generatedImage(BuildContext context, AiFaceCtrl ctrl){
-    return Flexible(
-      flex: 3,
+    return Expanded(
       child: Container(
           alignment: Alignment.center,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: CupertinoColors.secondarySystemBackground
+              color: Colors.white
           ),
           child: FutureBuilder(
               future: ctrl.myFuture,
               builder: (context,snapshot){
-                if(snapshot.connectionState == ConnectionState.waiting){
+                if(snapshot.connectionState == ConnectionState.none){
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      CircularProgressIndicator(),
-                      SizedBox(height: 10,),
-                      AutoSizeText("正在生成中～")
+                      sourceImage(context, ctrl),
+                      SizedBox(height: 30.h,),
+                      changeIcon(context, ctrl),
+                      SizedBox(height: 30.h,),
+                      faceImage(context, ctrl),
                     ],
                   );
+                }
+                else if(snapshot.connectionState == ConnectionState.waiting){
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      sourceImage(context, ctrl),
+                      SizedBox(height: 30.h,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AnimatedBuilder(
+                            animation: ctrl.animationController,
+                            builder: (BuildContext context, Widget? child) {
+                              return Transform.rotate(
+                                angle:ctrl.animationController.value*2*3.1415926,
+                                child: Container(
+                                  child: Center(child: RotatedBox(quarterTurns: 1,
+                                      child: Image.asset("assets/images/translate.png",width: 40.w,height: 40.w,))),
+                                ),
+                              );
+                            },
+                          ),
+                          SizedBox(width: 5.w,),
+                          Text("正在合成中")
+                        ],
+                      ),
+                      SizedBox(height: 30.h,),
+                      faceImage(context, ctrl),
+                    ],
+                  );
+                  // return Column(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     CircularProgressIndicator(),
+                  //     SizedBox(height: 10,),
+                  //     AutoSizeText("正在生成中～")
+                  //   ],
+                  // );
                 }
                 else if(snapshot.hasData){
                   return Column(
@@ -149,15 +190,48 @@ class AiFace extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Expanded(child: Image.memory(ctrl.generatedImage)),
+                      Expanded(child: Center(
+                        child: Stack(children: [
+                          Image.memory(ctrl.generatedImage),
+                          Positioned(
+                              bottom: 10.h,
+                              right: 10.w,
+                              child: Text("内容由Ai生成")
+                          )
+                        ],),
+                      )),
                     ],
                   );
                 }
                 else if(snapshot.hasError){
-                  return AutoSizeText("合成失败");
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AutoSizeText("很遗憾，换脸失败",style: TextStyle(fontSize: 16.sp),),
+                      SizedBox(height: 15.h,),
+                      ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: WidgetStatePropertyAll(Colors.white)
+                          ),
+                          onPressed: (){
+                            ctrl.myFuture = null;
+                            ctrl.update();
+                          },
+                          child: Text("继续换脸",style: TextStyle(fontSize: 14.sp,color: CustomColors.getMainColor(context)),)
+                      )
+                    ],
+                  );
                 }
                 else{
-                  return AutoSizeText("「生成结果将在这里显示」");
+                  return Column(
+                    children: [
+                      sourceImage(context, ctrl),
+                      SizedBox(height: 30.h,),
+                      changeIcon(context, ctrl),
+                      SizedBox(height: 30.h,),
+                      faceImage(context, ctrl),
+                    ],
+                  );
                 };
               }
           )
@@ -173,7 +247,13 @@ class AiFace extends StatelessWidget {
             backgroundColor: WidgetStatePropertyAll(CustomColors.getMainColor(context))
           ),
           onPressed: (){
-            ctrl.myFuture =  ctrl.generate();
+            if(UserData().isLogin){
+              ctrl.myFuture =  ctrl.generate();
+              ctrl.update();
+            }
+            else{
+              showToast("请您先登录");
+            }
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -1,15 +1,20 @@
 ﻿import 'package:comment1/common/app_component.dart';
 import 'package:comment1/common/loading.dart';
+import 'package:comment1/network/dio_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../../../network/apis.dart';
 
 class AccountSecurityCtrl extends GetxController {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
+  TextEditingController currentPasswordController = TextEditingController();
 
   final RxBool isLoading = false.obs;
   final RxBool obscurePassword = true.obs;
+  final RxBool obscureCurrentPassword = true.obs;
   final RxBool obscureConfirmPassword = true.obs;
 
   @override
@@ -33,6 +38,11 @@ class AccountSecurityCtrl extends GetxController {
   // 切换确认密码可见性
   void toggleConfirmPasswordVisibility() {
     obscureConfirmPassword.value = !obscureConfirmPassword.value;
+    update();
+  }
+
+  void toggleCurrentPasswordVisibility() {
+    obscureCurrentPassword.value = !obscureCurrentPassword.value;
     update();
   }
 
@@ -75,29 +85,20 @@ class AccountSecurityCtrl extends GetxController {
   void changePassword() async {
     Loading.show();
     if (formKey.currentState!.validate()) {
-      // 模拟API调用
-      await Future.delayed(Duration(seconds: 2), () {
-        isLoading.value = false;
-
-        // 这里应该是实际的API调用
-        // bool success = await UserApi.changePassword(passwordController.text);
-
-        // 模拟成功
-        bool success = true;
-
-        if (success) {
-          Get.back();
-          showToast("密码修改成功");
-        } else {
-          Get.snackbar(
-            '失败',
-            '密码修改失败，请重试',
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-          );
-        }
-      });
-      Loading.dismiss();
+      isLoading.value = false;
+      final data = {
+        "current_password": currentPasswordController.text,   // 必填 - 当前密码，用于验证身份
+        "new_password": passwordController.text,       // 必填 - 新密码，6-20位字符
+        "confirm_password": confirmPasswordController.text   // 必填 - 确认新密码，必须与new_password一致
+      };
+      final response = await HttpUtil().put(Api.putPassword,data: data);
+      if (response.isSuccess) {
+        Get.back();
+        showToast("修改成功");
+      } else {
+        showToast("${response.error?.message??"修改失败"}");
+      }
     }
+    Loading.dismiss();
   }
 }

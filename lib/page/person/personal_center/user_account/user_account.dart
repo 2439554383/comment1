@@ -36,10 +36,6 @@ class UserAccount extends StatelessWidget {
               // 邀请信息
               _buildSection("邀请信息", ctrl.inviteInfoItems, ctrl.getInviteFieldValue, context, ctrl),
               SizedBox(height: 20.h),
-
-              // 系统信息
-              _buildSection("系统信息", ctrl.systemInfoItems, ctrl.getSystemFieldValue, context, ctrl),
-              SizedBox(height: 20.h),
             ],
           ),
         ),

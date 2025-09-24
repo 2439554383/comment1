@@ -49,50 +49,22 @@ class Exchange extends StatelessWidget {
                         Text("兑换类型"),
                       ],
                     ),
-                    Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () => ctrl.toggleMode(true),
-                          child: Container(
-                            height: 40.h,
-                            alignment: Alignment.center,
-                            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 2.h),
-                            decoration: BoxDecoration(
-                              color: ctrl.isPoints ? Colors.orange : Colors.grey[200],
-                              borderRadius: BorderRadius.circular(20.r),
-                            ),
-                            child: Text(
-                              "积分兑换",
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                color: ctrl.isPoints ? Colors.white : Colors.black,
-                              ),
-                            ),
-                          ),
+                    Container(
+                      height: 40.h,
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 2.h),
+                      decoration: BoxDecoration(
+                        color:Colors.orange,
+                        borderRadius: BorderRadius.circular(20.r),
+                      ),
+                      child: Text(
+                        "余额兑换",
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color:Colors.white,
                         ),
-                        SizedBox(width: 12.w),
-                        GestureDetector(
-                          onTap: () => ctrl.toggleMode(false),
-                          child: Container(
-                            height: 40.h,
-                            alignment: Alignment.center,
-                            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 2.h),
-                            decoration: BoxDecoration(
-                              color: !ctrl.isPoints ? Colors.orange : Colors.grey[200],
-                              borderRadius: BorderRadius.circular(20.r),
-                            ),
-                            child: Text(
-                              "余额兑换",
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                color: !ctrl.isPoints ? Colors.white : Colors.black,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -121,13 +93,11 @@ class Exchange extends StatelessWidget {
                       children: [
                         Icon(Icons.account_balance_wallet, color: Colors.orange),
                         SizedBox(width: 8.w),
-                        Text(ctrl.isPoints ? "可用积分" : "可用余额"),
+                        Text("可用余额"),
                       ],
                     ),
                     Text(
-                      ctrl.isPoints
-                          ? ctrl.availablePoints.toString()
-                          : "${ctrl.availableBalance} 元",
+                      "${ctrl.availableBalance} 元",
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
@@ -157,7 +127,7 @@ class Exchange extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text("兑换额度"),
+                    const Text("兑换积分"),
                     SizedBox(
                       width: 120.w,
                       child: TextField(
@@ -200,7 +170,7 @@ class Exchange extends StatelessWidget {
                     const Text("兑换说明",
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     SizedBox(height: 8.h),
-                    Text("1. 请选择积分兑换或余额兑换。"),
+                    Text("1. 使用余额兑换积分"),
                     Text("2. 兑换成功后无法退回。"),
                     Text("3. 兑换额度不可大于可用额度。"),
                   ],

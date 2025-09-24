@@ -21,6 +21,8 @@ class AccountSecurity extends StatelessWidget {
           child: Column(
             children: [
               SizedBox(height: 30.h),
+              currentPasswordInput(context, ctrl),
+              SizedBox(height: 20.h),
               // 密码输入框
               passwordInput(context, ctrl),
               SizedBox(height: 20.h),
@@ -86,6 +88,33 @@ class AccountSecurity extends StatelessWidget {
               color: Colors.grey,
             ),
             onPressed: ctrl.toggleConfirmPasswordVisibility,
+          ),
+        ),
+        keyboardType: TextInputType.visiblePassword,
+      ),
+    );
+  }
+
+  Widget currentPasswordInput(BuildContext context, AccountSecurityCtrl ctrl) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 24.w),
+      child: TextFormField(
+        controller: ctrl.currentPasswordController,
+        obscureText: ctrl.obscureCurrentPassword.value,
+        validator: ctrl.validatePassword,
+        decoration: InputDecoration(
+          labelText: '旧密码',
+          hintText: '请再次输入密码',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          prefixIcon: Icon(Icons.lock_outline),
+          suffixIcon: IconButton(
+            icon: Icon(
+              ctrl.obscureCurrentPassword.value ? Icons.visibility_off : Icons.visibility,
+              color: Colors.grey,
+            ),
+            onPressed: ctrl.toggleCurrentPasswordVisibility,
           ),
         ),
         keyboardType: TextInputType.visiblePassword,

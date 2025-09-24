@@ -149,7 +149,7 @@ class Register extends StatelessWidget with FormValidationMixin{
                   text: "登录"
                   ,style: TextStyle(fontSize: 14.sp,fontWeight: FontWeight.w400,color: Colors.deepOrange),
                   recognizer: TapGestureRecognizer()..onTap = (){
-                    Froute.push(Froute.login);
+                    Get.back();
                   }
                 )
               ]

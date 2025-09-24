@@ -12,17 +12,8 @@ class Course extends StatelessWidget {
       init: CourseCtrl(),
       builder: (CourseCtrl ctrl) => Scaffold(
         body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 15.h,),
-            item1(context, ctrl),
-            SizedBox(height: 15.h,),
-            item1(context, ctrl),
-            SizedBox(height: 15.h,),
-            item1(context, ctrl),
-            SizedBox(height: 15.h,),
-            item1(context, ctrl),
-            SizedBox(height: 15.h,),
-            item1(context, ctrl),
             SizedBox(height: 15.h,),
             item1(context, ctrl),
             SizedBox(height: 20.h,),
@@ -33,6 +24,10 @@ class Course extends StatelessWidget {
   }
 
   Widget item1(BuildContext context, CourseCtrl ctrl) {
-    return Container();
+    return Center(
+        child: Container(
+          child: Text("敬请期待",style: TextStyle(fontSize: 20.sp,fontWeight: FontWeight.w500,color: Colors.black)),
+        )
+    );
   }
 }

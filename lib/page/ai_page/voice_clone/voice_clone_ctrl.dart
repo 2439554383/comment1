@@ -10,172 +10,212 @@ import 'package:just_audio/just_audio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:oktoast/oktoast.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:record/record.dart';
+import 'package:vision_gallery_saver/vision_gallery_saver.dart';
 
-class VoiceCloneCtrl extends GetxController {
+import '../../../api/http_api.dart';
+import '../../../common/loading.dart';
+import '../../../network/apis.dart';
+import '../../../network/dio_util.dart';
+
+class VoiceCloneCtrl extends GetxController with GetSingleTickerProviderStateMixin{
   TextEditingController textEditingController = TextEditingController();
-  AudioPlayer sourcePlayer = AudioPlayer();
-  AudioPlayer generatedPlayer = AudioPlayer();
-
+  late AnimationController animationController = AnimationController(vsync: this,duration: Duration(seconds: 1));
+  late AudioPlayer player = AudioPlayer();
+  bool hasData = false;
   File? sourceVoice;
   String? generatedVoiceUrl;
   String? recognitionText;
-
+  String? path ;
+  String? url ;
   Future? myFuture;
   Duration? audioDuration;
-
+ bool isComplete = false;
   // 录音状态
   bool isRecording = false;
+  bool isFinish = false;
   Duration recordDuration = Duration.zero;
   Timer? recordTimer;
-
+  AudioRecorder? record;
   // 播放状态
-  bool isSourcePlaying = false;
-  bool isGeneratedPlaying = false;
+  bool isPlaying= false;
 
   @override
   void onInit() {
-    super.onInit();
-    generatedPlayer.playerStateStream.listen((state) {
+    player.playerStateStream.listen((state) {
       if (state.processingState == ProcessingState.completed) {
-        isGeneratedPlaying = false;
+        print("语音结束");
+        isPlaying = false;
+        isComplete = true;
+        player.pause();
         update();
       }
     });
+    super.onInit();
   }
 
   @override
   void onClose() {
-    sourcePlayer.dispose();
-    generatedPlayer.dispose();
+    player.dispose();
     recordTimer?.cancel();
+    record!.cancel();
+    record!.dispose();
     super.onClose();
   }
 
-  // 开始录音
+  Future<bool> micPermission() async {
+    var status = await Permission.microphone.request();
+    return status.isGranted;
+  }
+
+  Future<String> getFilePath() async {
+    final dir = await getApplicationDocumentsDirectory(); // 或 getTemporaryDirectory()
+    final path = '${dir.path}/record_${DateTime.now().millisecondsSinceEpoch}.m4a';
+    return path;
+  }
+
   void startRecording() async {
+    isFinish = false;
     isRecording = true;
     recordDuration = Duration.zero;
+    path = null;
     update();
-
     recordTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       recordDuration += Duration(seconds: 1);
       update();
     });
+    record = AudioRecorder();
+    if(!await record!.hasPermission()){
+      await micPermission();
+    }
 
-    // 这里应该调用实际的录音功能
-    // 由于录音需要特定插件，这里只做UI演示
+    if (await record!.hasPermission()) {
+      // Start recording to file
+      final filePath =await getFilePath();
+      await record!.start(const RecordConfig(), path: filePath);
+      // // ... or to stream
+      // final stream = await record.startStream(const RecordConfig(encoder: AudioEncoder.pcm16bits));
+    }
+    else{
+      await micPermission();
+    }
   }
 
-  // 停止录音
-  void stopRecording() {
+  void stopRecording() async {
     isRecording = false;
     recordTimer?.cancel();
+    // Stop recording...
+    isFinish = true;
+    hasData = false;
     update();
+    path = await record!.stop();
+    await initPlayer(path!);
+    await play();
+// ... or cancel it (and implicitly remove file/blob).
+
 
     // 这里应该停止实际的录音并保存文件
   }
 
-  // 上传本地音频
   void pickAudio() async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['mp3', 'wav', 'm4a'],
     );
-
     if (result != null) {
-      final path = result.files.single.path;
-      if (path != null) {
-        sourceVoice = File(path);
-
-        // 获取音频时长
-        try {
-          await sourcePlayer.setFilePath(path);
-          audioDuration = sourcePlayer.duration;
-        } catch (e) {
-          print("Error getting audio duration: $e");
-        }
-
-        update();
-      }
+      hasData = false;
+      update();
+      path = result.files.single.path;
+      await initPlayer(path!);
+      await play();
     }
+  }
+
+  initPlayer(String path) async {
+    await player.setFilePath(path);
+    audioDuration = player.duration;
+  }
+
+  initNetPlayer(String url) async {
+    await player.setUrl(url);
+    audioDuration = player.duration;
   }
 
   // 播放源音频
-  void playSource() async {
-    if (sourceVoice == null) return;
-
-    if (isSourcePlaying) {
-      await sourcePlayer.pause();
-      isSourcePlaying = false;
-    } else {
-      await sourcePlayer.seek(Duration.zero);
-      await sourcePlayer.play();
-      isSourcePlaying = true;
-    }
+  play () async {
+    isPlaying = true;
+    update();
+    await player.play();
     update();
   }
 
-  // 播放生成的音频
-  void playGenerated() async {
-    if (generatedVoiceUrl == null) return;
-
-    if (isGeneratedPlaying) {
-      await generatedPlayer.pause();
-      isGeneratedPlaying = false;
-    } else {
-      if (generatedPlayer.processingState == ProcessingState.completed) {
-        await generatedPlayer.seek(Duration.zero);
-      }
-      await generatedPlayer.play();
-      isGeneratedPlaying = true;
-    }
+  pause () async {
+    isPlaying = false;
+    await player.pause();
     update();
   }
 
-  // 生成语音
-  Future<String?> generateVoice(String text) async {
-    if (sourceVoice == null) {
-      Get.snackbar("提示", "请先上传语音样本");
-      return null;
+  rePlay () async {
+    isPlaying = true;
+    isComplete = false;
+    update();
+    await player.seek(Duration.zero);
+    await player.play();
+  }
+
+  getAudio(BuildContext context,) async {
+    final text = textEditingController.text;
+    textEditingController.clear();
+    myFuture = postAudio(text,path!);
+    FocusScope.of(context).unfocus();
+    update();
+    await initNetPlayer(await myFuture);
+    await play();
+  }
+
+  postAudio(String text,String path) async{
+    final response = await http_api().post_audio("http://139.196.235.10:8005/comment/post_audio/", text,path);
+    if(response!=null){
+      hasData = true;
+      point();
+      update();
+      url = response;
+      return response;
     }
-
-    if (text.isEmpty) {
-      Get.snackbar("提示", "请输入要克隆的文本");
-      return null;
-    }
-
-    try {
-      // 这里应该是实际的API调用
-      // 模拟网络请求延迟
-      await Future.delayed(Duration(seconds: 2));
-
-      // 模拟返回的音频URL
-      return "https://example.com/generated_voice.wav";
-    } catch (e) {
-      print("Error generating voice: $e");
-      return null;
+    else{
+      return Future.error("error");
     }
   }
 
-  // 保存生成的音频
-  void saveGeneratedAudio() async {
-    if (generatedVoiceUrl == null) return;
-
-    try {
-      final status = await Permission.storage.request();
-      if (!status.isGranted) {
-        Get.snackbar("提示", "需要存储权限才能保存音频");
-        return;
-      }
-
-      // 这里应该是实际的下载和保存逻辑
-      Get.snackbar("成功", "音频已保存到相册");
-    } catch (e) {
-      print("Error saving audio: $e");
-      Get.snackbar("错误", "保存失败");
+  point() async {
+    final data = {
+      "template_id":1
+    };
+    final r = await HttpUtil().post(Api.point,data: data);
+  }
+  dowload () async{
+    Loading.show();
+    final response = await http.get(Uri.parse(url!));
+    final temporary = await getTemporaryDirectory();
+    final temporary_path = "${temporary.path}/temp_audio${DateTime.now().millisecondsSinceEpoch}.wav";
+    File file = File(temporary_path);
+    await file.writeAsBytes(response.bodyBytes);
+    final status = await Permission.videos.request();
+    if(status.isGranted){
+      final save_video  = VisionGallerySaver.saveFile(temporary_path);
+      save_video.whenComplete(() async{
+        showToast("保存成功",backgroundColor: Colors.black54,position: ToastPosition.bottom,radius: 40,textStyle: TextStyle(color: Colors.white));
+        await file.delete();
+      });
     }
+    else{
+      print("保存失败");
+      showToast("保存失败",backgroundColor: Colors.black54,position: ToastPosition.bottom,radius: 40,textStyle: TextStyle(color: Colors.white));
+    }
+    Loading.dismiss();
   }
 
   // 格式化时间

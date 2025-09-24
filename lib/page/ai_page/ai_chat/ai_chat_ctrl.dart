@@ -73,7 +73,7 @@ class AiChatCtrl extends GetxController {
 
   postImage() async{
     streamController = StreamController.broadcast();
-    final response = await http_api().postimage_api("http://134.175.230.215:8005/comment/get_image/", textEditingController.text, image!.path,type,streamController);
+    final response = await http_api().postimage_api("http://139.196.235.10:8005/comment/get_image/", textEditingController.text, image!.path,type,streamController);
     update();
   }
   pickImage() async{
@@ -88,7 +88,7 @@ class AiChatCtrl extends GetxController {
   }
   postText() async{
     streamController = StreamController.broadcast();
-    final response = await http_api().post_text("http://134.175.230.215:8005/comment/get_text/", textEditingController.text,type,streamController);
+    final response = await http_api().post_text("http://139.196.235.10:8005/comment/get_text/", textEditingController.text,type,streamController);
     textEditingController.clear();
     update();
   }

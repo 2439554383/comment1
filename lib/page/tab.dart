@@ -1,8 +1,11 @@
+import 'package:comment1/data/user_data.dart';
 import 'package:comment1/page/tab_ctrl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../../common/app_component.dart';
+import '../common/loading.dart';
 import 'bottomBar.dart';
 
 class TabPage extends StatelessWidget {

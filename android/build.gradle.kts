@@ -1,5 +1,8 @@
 allprojects {
     repositories {
+        maven { url = uri("https://mirrors.tuna.tsinghua.edu.cn/google/maven/") }   // Google Maven 镜像
+        maven { url = uri("https://mirrors.tuna.tsinghua.edu.cn/maven-central/") }   // Maven Central 镜像
+        maven { url = uri("https://mirrors.tuna.tsinghua.edu.cn/gradle-plugin/") }
         maven { url = uri("https://maven.aliyun.com/repository/google") }         // 替代 google()
         maven { url = uri("https://maven.aliyun.com/repository/central") }        // 替代 mavenCentral()
     }

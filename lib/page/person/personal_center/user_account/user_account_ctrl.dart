@@ -39,34 +39,34 @@ class UserAccountCtrl extends GetxController with GetSingleTickerProviderStateMi
   // 积分信息字段列表
   var pointsInfoItems = [
     {
+      "title": "总积分",
+      "value": "totalPoints",
+      "icon": Icons.star,
+    },
+    {
       "title": "可用积分",
       "value": "availablePoints",
       "icon": Icons.monetization_on,
     },
     {
-      "title": "冻结积分",
-      "value": "frozenPoints",
+      "title": "消耗积分",
+      "value": "consumedPoints",
       "icon": Icons.lock,
-    },
-    {
-      "title": "总积分",
-      "value": "totalPoints",
-      "icon": Icons.star,
     },
   ];
 
   // 评论信息字段列表
   var commentInfoItems = [
-    {
-      "title": "每日限制",
-      "value": "dailyLimit",
-      "icon": Icons.today,
-    },
-    {
-      "title": "剩余次数",
-      "value": "remainingTimes",
-      "icon": Icons.refresh,
-    },
+    // {
+    //   "title": "每日限制",
+    //   "value": "dailyLimit",
+    //   "icon": Icons.today,
+    // },
+    // {
+    //   "title": "剩余次数",
+    //   "value": "remainingTimes",
+    //   "icon": Icons.refresh,
+    // },
     {
       "title": "今日评论",
       "value": "todayComments",
@@ -93,20 +93,6 @@ class UserAccountCtrl extends GetxController with GetSingleTickerProviderStateMi
     },
   ];
 
-  // 系统信息字段列表
-  var systemInfoItems = [
-    {
-      "title": "免费试用次数",
-      "value": "freeTrials",
-      "icon": Icons.free_breakfast,
-    },
-    {
-      "title": "会员起始时间",
-      "value": "memberSince",
-      "icon": Icons.calendar_today,
-    },
-  ];
-
   // 余额信息字段列表
   var balanceInfoItems = [
     {
@@ -121,10 +107,10 @@ class UserAccountCtrl extends GetxController with GetSingleTickerProviderStateMi
     switch (field) {
       case "availablePoints":
         return userResponse.pointsInfo?.availablePoints?.toString() ?? "0";
-      case "frozenPoints":
-        return userResponse.pointsInfo?.frozenPoints?.toString() ?? "0";
+      case "consumedPoints":
+        return userResponse.pointsInfo?.totalPointsConsumed?.toString() ?? "0";
       case "totalPoints":
-        return userResponse.pointsInfo?.totalPoints?.toString() ?? "0";
+        return userResponse.pointsInfo?.totalPointsRewarded?.toString() ?? "0";
       default:
         return "0";
     }

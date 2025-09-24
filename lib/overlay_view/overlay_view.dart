@@ -1,4 +1,6 @@
-﻿import 'package:auto_size_text/auto_size_text.dart';
+﻿import 'dart:convert';
+
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -74,17 +76,21 @@ class OverlayView extends StatelessWidget {
                       shrinkWrap: true,
                       padding: EdgeInsets.zero,
                       scrollDirection: Axis.vertical,
-                      itemCount: ctrl.wordList.length,
+                      itemCount: ctrl.selectList.length,
                       itemBuilder: (conntext,index){
-                        return Row(
-                          children: [
-                            Expanded(
-                              child: Checkbox(value: ctrl.wordList[index][3], onChanged: (value){
-                                // ctrl.switch_type_isset1(value!, index);
-                              }),
-                            ),
-                            Expanded(child: Container(child: Text(ctrl.wordList[index][1],softWrap: true,)))
-                          ],
+                        return GestureDetector(
+                          onTap: (){
+                            ctrl.changeStatus(index);
+                          },
+                          behavior: HitTestBehavior.opaque,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: AbsorbPointer(child: Checkbox(value: ctrl.selectList[index].isCheck, onChanged: (value){})),
+                              ),
+                              Expanded(child: Container(child: Text(ctrl.selectList[index].typeName,softWrap: true,)))
+                            ],
+                          ),
                         );
                       },
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4,childAspectRatio:6/3)),
@@ -107,7 +113,7 @@ class OverlayView extends StatelessWidget {
               Flexible(
                   flex: 2,
                   child: TextField(
-                    controller: ctrl.textEditingController2,
+                    controller: ctrl.tcCount,
                     decoration: InputDecoration(
                       hintText: "字数",
                       hintStyle: TextStyle(fontStyle: FontStyle.italic),
@@ -135,18 +141,37 @@ class OverlayView extends StatelessWidget {
                             ctrl.textEditingController.text = "获取失败";
                           }
                           else if (snapshot.hasData) {
-                            ctrl.textEditingController.text += snapshot.data!;
+                            final String decodedString = utf8.decode(snapshot.data!);
+                            ctrl.textEditingController.text += decodedString;
                           }
                         }
-                        return TextField(
-                          controller: ctrl.textEditingController,
-                          maxLines: 10,
-                          keyboardType: TextInputType.text,
-                          decoration: InputDecoration(
-                              contentPadding:EdgeInsets.symmetric(horizontal: 8, vertical: 4) ,
-                              hintStyle: TextStyle(fontStyle: FontStyle.italic),
-                              hintText: "https://v.douyin.com/2mOjGQQiqm0/"
-                          ),
+                        return Column(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: ctrl.textEditingController,
+                                maxLines: 10,
+                                keyboardType: TextInputType.text,
+                                decoration: InputDecoration(
+                                    contentPadding:EdgeInsets.symmetric(horizontal: 8, vertical: 4) ,
+                                    hintStyle: TextStyle(fontStyle: FontStyle.italic),
+                                    hintText: "https://v.douyin.com/2mOjGQQiqm0/",
+                                    border: InputBorder.none
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 5.h,),
+                            Container(
+                                padding: EdgeInsets.only(right: 20.w),
+                                alignment: Alignment.centerRight,
+                                child: Text("内容由Ai生成")
+                            ),
+                            SizedBox(height: 5.h,),
+                            Container(
+                              color: Colors.black54,
+                              height: 1,
+                            ),
+                          ],
                         );
                       },
                     )
@@ -166,16 +191,18 @@ class OverlayView extends StatelessWidget {
                           ctrl.postComment();
                           ctrl.showFloatingMessage(context,"真棒！又发了一条评论");
                         },
-                          child: FittedBox(child: Text("获取")),
+                          child: FittedBox(child: Text("生成")),
                           style: ButtonStyle(
                           ),
                         ),
                       ),
                       Expanded(
-                        child: TextButton(onPressed: (){
-                          // ctrl.reset();
-                        }, child: FittedBox(child: Text("重置")),style: ButtonStyle(
-                        ),),
+                        child: TextButton(
+                            onPressed: (){
+                              ctrl.reset();
+                            },
+                            child: FittedBox(child: Text("重置"))
+                        ),
                       ),
                       Expanded(
                         child: TextButton(
@@ -299,6 +326,8 @@ class OverlayView extends StatelessWidget {
                             style: ButtonStyle(
                             ),
                             onPressed: () async{
+                              ctrl.streamController.close();
+                              ctrl.clear();
                               ctrl.switchWindows(false);
                               await FlutterOverlayWindow.resizeOverlay(150, 150,false);
                               await FlutterOverlayWindow.updateFlag(OverlayFlag.defaultFlag);

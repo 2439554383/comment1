@@ -1,8 +1,10 @@
 
+import 'package:comment1/common/app_component.dart';
 import 'package:comment1/page/person/personal_center/personal_center.dart';
 import 'package:comment1/page/person/to_login/to_login.dart';
 import 'package:comment1/page/ranking/ranking.dart';
 import 'package:comment1/page/store/store.dart';
+import 'package:comment1/route/route.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
 import '../data/user_data.dart';
@@ -18,13 +20,12 @@ class TabViewCtrl extends GetxController {
   var childindex;
   @override
   void onInit() {
-
     pageController = PageController(initialPage: currentIndex.value);
     pages = [
       Home(),
       Course(),
       Store(),
-      Ranking(),
+      UserData().isLogin?Ranking():ToLogin(),
       UserData().isLogin?PersonalCenter():ToLogin(),
     ];
     super.onInit();

@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class SettingCue extends StatelessWidget {
   const SettingCue({super.key});
@@ -29,24 +30,22 @@ class SettingCue extends StatelessWidget {
             children: [
               Expanded(
                 child: Container(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        ExpansionTile(
-                          title: Text("评论类型"),
-                          children:
-                          List.generate(
-                            ctrl.cueList.length, (index) => CheckboxListTile(
-                              title: Text(ctrl.cueList[index].name),
-                              value: ctrl.cueList[index].isSet,
-                              onChanged: (value) async {
-                                ctrl.changeStatus();
-                            },
-                            ),
+                  child: ListView(
+                    children: [
+                      ExpansionTile(
+                        title: Text("评论类型"),
+                        children:
+                        List.generate(
+                          ctrl.typeList.length, (index) => CheckboxListTile(
+                            title: Text(ctrl.typeList[index].typeName),
+                            value: ctrl.typeList[index].isSelect,
+                            onChanged: (value) async {
+                              ctrl.changeStatus(index);
+                          },
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),

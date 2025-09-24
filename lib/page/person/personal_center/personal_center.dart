@@ -1,5 +1,6 @@
 ﻿
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:comment1/common/app_component.dart';
 import 'package:comment1/page/person/personal_center/personal_center_ctrl.dart';
 import 'package:comment1/route/route.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,6 +17,7 @@ class PersonalCenter extends StatelessWidget {
       init: PersonalCenterCtrl(),
       builder: (PersonalCenterCtrl ctrl)=>
           Scaffold(
+            resizeToAvoidBottomInset: false,
             body: SafeArea(
               child: Container(
                 padding: EdgeInsets.all(15.r),
@@ -56,7 +58,7 @@ class PersonalCenter extends StatelessWidget {
                       borderRadius: BorderRadius.only(topRight: Radius.circular(10),bottomRight: Radius.circular(10),topLeft: Radius.circular(10),bottomLeft: Radius.circular(10))
                   ),
                   clipBehavior: Clip.hardEdge,
-                  child: Text("剩余点数：${ctrl.pointsInfo.availablePoints}",style: TextStyle(fontSize: 12.sp,fontWeight: FontWeight.w500,color: Color.fromRGBO(37, 38, 38, 1)))
+                  child: Text("可用积分：${ctrl.pointsInfo.availablePoints}",style: TextStyle(fontSize: 12.sp,fontWeight: FontWeight.w500,color: Color.fromRGBO(37, 38, 38, 1)))
               )
             ],
           ),
@@ -128,7 +130,8 @@ class PersonalCenter extends StatelessWidget {
                   ),
                   child: TextButton(
                     onPressed:(){
-                      Froute.push(Froute.open_member);
+                      showToast("暂未开放");
+                      // Froute.push(Froute.open_member);
                     },
                     child:Row(
                       children: [
@@ -181,11 +184,12 @@ class PersonalCenter extends StatelessWidget {
   funcItem(BuildContext context, PersonalCenterCtrl ctrl,int index){
     return GestureDetector(
       onTap: ctrl.itemFunc[index],
+      behavior: HitTestBehavior.opaque,
       child: Container(
+        width: double.infinity,
         padding: EdgeInsets.all(15.r),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.r),
-          color: Colors.white
         ),
         child: Text(ctrl.itemName[index],style: TextStyle(fontSize: 16.sp,fontWeight: FontWeight.w500,color: Color.fromRGBO(37, 38, 38, 1))),
       ),

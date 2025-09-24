@@ -98,27 +98,36 @@ class InviteInfo {
 
 class PointsInfo {
   int? availablePoints;
+  int? currentPoints;
   int? frozenPoints;
-  int? totalPoints;
+  int? totalPointsConsumed;
+  int? totalPointsRewarded;
 
   PointsInfo({
     this.availablePoints,
+    this.currentPoints,
     this.frozenPoints,
-    this.totalPoints,
+    this.totalPointsConsumed,
+    this.totalPointsRewarded,
   });
 
   factory PointsInfo.fromJson(Map<String, dynamic> json) => PointsInfo(
     availablePoints: json['available_points'] ?? 0,
+    currentPoints: json['current_points'] ?? 0,
     frozenPoints: json['frozen_points'] ?? 0,
-    totalPoints: json['total_points'] ?? 0,
+    totalPointsConsumed: json['total_points_consumed'] ?? 0,
+    totalPointsRewarded: json['total_points_rewarded'] ?? 0,
   );
 
   Map<String, dynamic> toJson() => {
     'available_points': availablePoints,
+    'current_points': currentPoints,
     'frozen_points': frozenPoints,
-    'total_points': totalPoints,
+    'total_points_consumed': totalPointsConsumed,
+    'total_points_rewarded': totalPointsRewarded,
   };
 }
+
 
 class SystemInfo {
   int? freeTrials;

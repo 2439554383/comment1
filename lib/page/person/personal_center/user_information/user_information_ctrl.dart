@@ -1,11 +1,17 @@
-﻿import 'package:comment1/data/user_data.dart';
+﻿import 'package:comment1/common/loading.dart';
+import 'package:comment1/data/user_data.dart';
 import 'package:comment1/model/user_response.dart';
+import 'package:comment1/network/dio_util.dart';
+import 'package:comment1/page/person/personal_center/personal_center_ctrl.dart';
 import 'package:comment1/route/route.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:oktoast/oktoast.dart';
+
+import '../../../../network/apis.dart';
 
 class UserInformationCtrl extends GetxController with GetSingleTickerProviderStateMixin {
   late UserInfo userInfo;
@@ -43,19 +49,19 @@ class UserInformationCtrl extends GetxController with GetSingleTickerProviderSta
 
   // 用户信息字段列表
   var userInfoItems = [
+    // {
+    //   "title": "用户ID",
+    //   "value": "id",
+    //   "editable": false,
+    // },
     {
-      "title": "用户ID",
-      "value": "id",
+      "title": "手机号",
+      "value": "phone",
       "editable": false,
     },
     {
       "title": "昵称",
       "value": "nickname",
-      "editable": true,
-    },
-    {
-      "title": "手机号",
-      "value": "phone",
       "editable": true,
     },
     {
@@ -83,18 +89,13 @@ class UserInformationCtrl extends GetxController with GetSingleTickerProviderSta
       "value": "createdAt",
       "editable": false,
     },
-    {
-      "title": "管理员",
-      "value": "isAdmin",
-      "editable": false,
-    },
   ];
 
   // 获取字段值
   String getFieldValue(String field) {
     switch (field) {
-      case "id":
-        return userInfo.id?.toString() ?? "未知";
+      // case "id":
+      //   return userInfo.id?.toString() ?? "未知";
       case "nickname":
         return userInfo.nickname ?? "未设置";
       case "phone":
@@ -158,25 +159,39 @@ class UserInformationCtrl extends GetxController with GetSingleTickerProviderSta
   }
 
   // 更新用户信息
-  void updateUserInfo(String field, String value) {
+  void updateUserInfo(String field, String value) async {
+    Loading.show();
+    var data = {};
     switch (field) {
       case "nickname":
         userInfo.nickname = value;
-        break;
-      case "phone":
-        userInfo.phone = value;
+        data ={
+          "nickname": value,
+        };
         break;
       case "city":
         userInfo.city = value;
+        data ={
+          "city": value,
+        };
         break;
       case "industry":
         userInfo.industry = value;
+        data ={
+          "industry": value,
+        };
         break;
     }
-
-    // 这里应该调用API更新用户信息
-    // UserData().updateUserInfo(userInfo);
-
+    final response = await HttpUtil().put(Api.putUserinfo,data: data);
+    if(response.isSuccess){
+      PersonalCenterCtrl ctrl = Get.find<PersonalCenterCtrl>();
+      ctrl.init();
+      showToast("修改成功");
+    }
+    else{
+      showToast("${response.error?.message ?? "修改失败"}");
+    }
+    Loading.dismiss();
     update(); // 刷新UI
   }
 }
