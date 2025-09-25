@@ -1,4 +1,4 @@
-package com.example.newcomment;
+package com.example.comment1;
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity;

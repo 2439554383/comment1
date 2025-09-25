@@ -130,7 +130,7 @@ class Home extends StatelessWidget {
           crossAxisCount: 1,
           mainAxisSpacing: 10,
           crossAxisSpacing: 10,
-          childAspectRatio:5/1,
+          childAspectRatio:4/1,
         ),
         itemCount: ctrl.iconList.length,
         itemBuilder: (context,index){
