@@ -8,6 +8,7 @@ import '../overlay_view/overlay_view.dart';
 import '../page/ai_page/ai_chat/ai_chat.dart';
 import '../page/ai_page/ai_image/ai_image.dart';
 import '../page/ai_page/voice_clone/voice_clone.dart';
+import '../page/ai_page/voice_extract/voice_extract.dart';
 import 'package:comment1/page/ai_page/water_mark/water_mark.dart';
 import '../page/ai_page/voice_clone/voice_select/voice_select.dart';
 import '../page/home/setting_cue/setting_cue.dart';
@@ -61,6 +62,7 @@ class Froute{
   static const String voiceClone = '/voice_clone';
   static const String aiImage = '/ai_image';
   static const String aiFace = '/ai_face';
+  static const String voiceExtract = '/voice_extract';
   static const String home = '/home';
   static const String tabPage = '/tabPage';
   static const String open_member = '/open_member';
@@ -70,6 +72,7 @@ class Froute{
   static List<GetPage> getPages = [
     GetPage(name: aiImage, page: () => AiImage()),
     GetPage(name: aiFace, page: () => AiFace()),
+    GetPage(name: voiceExtract, page: () => VoiceExtract()),
     GetPage(name: voiceClone, page: () => VoiceClone()),
     GetPage(name: waterMark, page: () => WaterMark()),
     GetPage(name: aiChat, page: () => AiChat()),

@@ -127,10 +127,10 @@ class Home extends StatelessWidget {
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 1,
+          crossAxisCount: 2,
           mainAxisSpacing: 10,
           crossAxisSpacing: 10,
-          childAspectRatio:4/1,
+          childAspectRatio:1,
         ),
         itemCount: ctrl.iconList.length,
         itemBuilder: (context,index){

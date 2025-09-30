@@ -7,6 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   permission_handler_windows
   record_windows
   rive_common
+  share_plus
   url_launcher_windows
   window_size
 )

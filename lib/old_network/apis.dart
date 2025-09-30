@@ -10,4 +10,5 @@ class OldApi {
   static const String removeMark = "/get_unmarkvideo/"; //去水印
   static const String aiFace = "/post_aiface/"; //ai换脸
   static const String voiceClone = "/post_audio/"; //克隆声音
+  static const String extractVoiceFromVideo = "/extract_voice/"; //从视频提取人声
 }
