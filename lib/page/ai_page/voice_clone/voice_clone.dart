@@ -33,8 +33,8 @@ class VoiceClone extends StatelessWidget {
         body: Container(
           color: Colors.white,
           padding: EdgeInsets.all(16.w),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          child: ListView(
+
             children: [
               // 标题
               Text(
@@ -338,9 +338,8 @@ class VoiceClone extends StatelessWidget {
             SizedBox(width: 20.w,),
             Expanded(
               child: OutlinedButton(
-                onPressed: (){
-                  // ctrl.pickAudio();
-                  Froute.push(Froute.voiceSelect);
+                onPressed: () async {
+                  await ctrl.pickSavedAudio();
                 },
                 style: OutlinedButton.styleFrom(
                   foregroundColor: Theme.of(context).primaryColor,
@@ -349,7 +348,7 @@ class VoiceClone extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                child: Text("选择多样化音效"),
+                child: Text("选择已提取的人声"),
               ),
             ),
           ],

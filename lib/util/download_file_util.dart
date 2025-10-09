@@ -10,7 +10,16 @@ class DownloadFileUtil{
   static String _localPath = '';
   static Future download(String? link) async {
     if (Platform.isAndroid) {
-      bool r = await checkPermission(Permission.storage);
+      // 根据文件扩展名判断类型，默认使用video
+      String fileType = 'video';
+      if (link != null) {
+        if (link.endsWith('.jpg') || link.endsWith('.png') || link.endsWith('.jpeg') || link.endsWith('.gif')) {
+          fileType = 'image';
+        } else if (link.endsWith('.mp3') || link.endsWith('.wav') || link.endsWith('.m4a')) {
+          fileType = 'audio';
+        }
+      }
+      bool r = await checkStoragePermission(type: fileType);
       if (!r) {
         return;
       }

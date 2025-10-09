@@ -1,3 +1,4 @@
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -247,28 +248,7 @@ class VoiceExtract extends StatelessWidget {
           ],
           
           // 音频播放器
-          _buildAudioPlayer(context, ctrl),
-          
-          SizedBox(height: 20.h),
-          
-          // 操作按钮
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildActionButton(
-                context,
-                icon: Icons.download,
-                label: "下载",
-                onTap: () => ctrl.downloadExtractedAudio(),
-              ),
-              _buildActionButton(
-                context,
-                icon: Icons.share,
-                label: "分享",
-                onTap: () => ctrl.shareToWeChat(),
-              ),
-            ],
-          ),
+          Expanded(child: _buildAudioPlayer(context, ctrl)),
         ],
       );
     } else {
@@ -335,7 +315,18 @@ class VoiceExtract extends StatelessWidget {
               ),
               SizedBox(width: 20.w),
               GestureDetector(
-                onTap: () => ctrl.togglePlayPause(),
+                onTap: () {
+                  print(ctrl.isComplete);
+                  if(ctrl.isPlaying && ctrl.isComplete==false){
+                    ctrl.pause();
+                  }
+                  else if(!ctrl.isPlaying && ctrl.isComplete==false){
+                    ctrl.play();
+                  }
+                  else{
+                    ctrl.rePlay();
+                  }
+                },
                 child: Container(
                   width: 60.w,
                   height: 60.w,
@@ -355,123 +346,49 @@ class VoiceExtract extends StatelessWidget {
           
           SizedBox(height: 20.h),
           
-          // 进度条和波形显示
-          Column(
-            children: [
-              // 时间显示
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  AutoSizeText(
-                    ctrl.formatDuration(ctrl.currentPosition),
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  AutoSizeText(
-                    ctrl.formatDuration(ctrl.audioDuration),
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                ],
-              ),
-              
-              SizedBox(height: 8.h),
-              
-              // 进度条
-              GestureDetector(
-                onTapDown: (details) {
-                  final RenderBox box = context.findRenderObject() as RenderBox;
-                  final localPosition = box.globalToLocal(details.globalPosition);
-                  final width = box.size.width;
-                  final percentage = localPosition.dx / width;
-                  final newPosition = Duration(
-                    milliseconds: (ctrl.audioDuration.inMilliseconds * percentage).round(),
-                  );
-                  ctrl.seekTo(newPosition);
+          // 使用 ProgressBar 进度条（和 voice_clone 一样）
+          StreamBuilder<Duration>(
+            stream: ctrl.audioPlayer.positionStream,
+            builder: (context, snapshot) {
+              final position = snapshot.data ?? Duration.zero;
+              final duration = ctrl.audioDuration ?? Duration.zero;
+              return ProgressBar(
+                progress: position,
+                total: duration,
+                onSeek: (newPosition) {
+                  ctrl.audioPlayer.seek(newPosition);
                 },
-                child: Container(
-                  height: 4.h,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  child: Stack(
-                    children: [
-                      // 进度条背景
-                      Container(
-                        height: 4.h,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                      // 进度条填充
-                      FractionallySizedBox(
-                        alignment: Alignment.centerLeft,
-                        widthFactor: ctrl.audioDuration.inMilliseconds > 0
-                            ? ctrl.currentPosition.inMilliseconds / ctrl.audioDuration.inMilliseconds
-                            : 0.0,
-                        child: Container(
-                          height: 4.h,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              
-              SizedBox(height: 15.h),
-              
-              // 波形显示（简化版）
-              _buildWaveform(context, ctrl),
-            ],
+              );
+            },
           ),
+          
+          SizedBox(height: 20.h),
+          
+          // 下载按钮
+          if (ctrl.hasExtractedAudio) ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildActionButton(
+                  context,
+                  icon: Icons.download,
+                  label: "下载",
+                  onTap: () => ctrl.dowload(),
+                ),
+                _buildActionButton(
+                  context,
+                  icon: Icons.share,
+                  label: "分享",
+                  onTap: () => ctrl.shareToWeChat(),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );
   }
 
-  // 波形显示组件
-  Widget _buildWaveform(BuildContext context, VoiceExtractCtrl ctrl) {
-    return Container(
-      height: 60.h,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: List.generate(20, (index) {
-          final progress = ctrl.audioDuration.inMilliseconds > 0
-              ? ctrl.currentPosition.inMilliseconds / ctrl.audioDuration.inMilliseconds
-              : 0.0;
-          final isActive = (index / 20.0) <= progress;
-          
-          return AnimatedContainer(
-            duration: Duration(milliseconds: 100),
-            width: 3.w,
-            height: (20 + (index % 3) * 10).toDouble(),
-            decoration: BoxDecoration(
-              color: isActive 
-                  ? Theme.of(context).primaryColor
-                  : Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(1.5),
-            ),
-          );
-        }),
-      ),
-    );
-  }
 
   Widget _buildActionButton(
     BuildContext context, {

@@ -41,11 +41,15 @@ class WaterMark extends StatelessWidget {
     return Expanded(
       child: GestureDetector(
         onTap: () async {
-          if(ctrl.videoPlayerController.value.isPlaying){
-            ctrl.videoPlayerController.pause();
-          }
-          else{
-            ctrl.videoPlayerController.play();
+          // 添加空检查
+          if(ctrl.videoPlayerController != null) {
+            if(ctrl.videoPlayerController!.value.isPlaying){
+              ctrl.videoPlayerController!.pause();
+            }
+            else{
+              ctrl.videoPlayerController!.play();
+            }
+            ctrl.update(); // 更新UI状态
           }
         },
         child:
@@ -65,7 +69,7 @@ class WaterMark extends StatelessWidget {
                   );
                 }
                 else if(snapshot.hasData) {
-                  if(ctrl.videoPlayerController.value.isInitialized){
+                  if(ctrl.videoPlayerController != null && ctrl.videoPlayerController!.value.isInitialized){
                     return Column(
                       children: [
                         SizedBox(height: 10,),
@@ -81,7 +85,7 @@ class WaterMark extends StatelessWidget {
                             ],
                           ),
                         ),
-                        Expanded(child: VideoPlayer(ctrl.videoPlayerController)),
+                        Expanded(child: VideoPlayer(ctrl.videoPlayerController!)),
                       ],
                     );
                   }

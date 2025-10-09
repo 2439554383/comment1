@@ -24,16 +24,41 @@ class WaterMarkCtrl extends GetxController {
   }
 
   @override
-  void dispose() {
-    super.dispose();
+  void onClose() {
+    // 退出页面时释放所有资源
+    _disposeVideoController();
+    textEditingController.dispose();
+    super.onClose();
   }
+  
   Widget defaultWidget  = Text("我是你的去水印助手");
   ImagePicker imagePicker = ImagePicker();
   late TextEditingController textEditingController = TextEditingController();
-  late VideoPlayerController videoPlayerController;
+  VideoPlayerController? videoPlayerController; // 改为可空类型
   Future? myFuture;
   var generatedVideo;
   var isinit;
+  
+  // 释放视频控制器的方法
+  void _disposeVideoController() {
+    if (videoPlayerController != null) {
+      if (videoPlayerController!.value.isPlaying) {
+        videoPlayerController!.pause();
+      }
+      videoPlayerController!.dispose();
+      videoPlayerController = null;
+    }
+  }
+  
+  // 重置所有状态，让下次进入是全新页面
+  void resetAll() {
+    _disposeVideoController();
+    textEditingController.clear();
+    myFuture = null;
+    generatedVideo = null;
+    isinit = null;
+    update();
+  }
   saveFile() async{
     Loading.show();
     try{
@@ -43,8 +68,10 @@ class WaterMarkCtrl extends GetxController {
       final temporary_path = "${temporary.path}/temp_$timestamp.mp4";
       File file = File(temporary_path);
       await file.writeAsBytes(response.bodyBytes);
-      final status = await Permission.videos.request();
-      if(status.isGranted){
+      
+      // 使用兼容不同Android版本的权限请求
+      final hasPermission = await checkStoragePermission(type: 'video');
+      if(hasPermission){
         final save_video  = VisionGallerySaver.saveFile(temporary_path);
         save_video.whenComplete(() async{
           showToast("保存成功");
@@ -85,14 +112,23 @@ class WaterMarkCtrl extends GetxController {
   }
   setFuture(BuildContext context) async {
     var text = textEditingController.text;
+    if (text.trim().isEmpty) {
+      showToast("请输入视频链接");
+      return;
+    }
+    
     textEditingController.clear();
     FocusScope.of(context).unfocus();
+    
+    // 创建新视频前先释放旧的视频控制器
+    _disposeVideoController();
+    
     myFuture = () async {
       await removeWatermark(text);
 
       if (generatedVideo != null) {
         videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(generatedVideo));
-        await videoPlayerController.initialize();
+        await videoPlayerController!.initialize();
         update(); // GetX 刷新
       }
 
@@ -102,5 +138,6 @@ class WaterMarkCtrl extends GetxController {
   }
   clear(){
     defaultWidget = Text("我是你的去水印助手");
+    resetAll(); // 清空时也重置所有状态
   }
 }

@@ -57,10 +57,10 @@ class AiImageCtrl extends GetxController {
   download() async {
     Loading.show();
 
-    // Android 13+ 推荐用 Permission.photos
-    final status = await Permission.photos.request();
+    // 使用兼容不同Android版本的权限请求
+    final hasPermission = await checkStoragePermission(type: 'image');
 
-    if (status.isGranted) {
+    if (hasPermission) {
       final response = await http.get(Uri.parse(image));
 
       final result = await VisionGallerySaver.saveImage(response.bodyBytes);

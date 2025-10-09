@@ -17,6 +17,7 @@ import 'package:record/record.dart';
 import 'package:vision_gallery_saver/vision_gallery_saver.dart';
 
 import '../../../api/http_api.dart';
+import '../../../common/app_component.dart' hide showToast;
 import '../../../common/loading.dart';
 import '../../../network/apis.dart';
 import '../../../network/dio_util.dart';
@@ -133,6 +134,19 @@ class VoiceCloneCtrl extends GetxController with GetSingleTickerProviderStateMix
       await play();
     }
   }
+  
+  // 从已保存的音频中选择
+  Future<void> pickSavedAudio() async {
+    final result = await Get.toNamed('/voice_select');
+    if (result != null && result is String) {
+      print('选择的音频文件: $result');
+      hasData = false;
+      update();
+      path = result;
+      await initPlayer(path!);
+      await play();
+    }
+  }
 
   initPlayer(String path) async {
     await player.setFilePath(path);
@@ -168,7 +182,6 @@ class VoiceCloneCtrl extends GetxController with GetSingleTickerProviderStateMix
 
   getAudio(BuildContext context,) async {
     final text = textEditingController.text;
-    textEditingController.clear();
     myFuture = postAudio(text,path!);
     FocusScope.of(context).unfocus();
     update();
@@ -180,6 +193,7 @@ class VoiceCloneCtrl extends GetxController with GetSingleTickerProviderStateMix
     final response = await http_api().post_audio("http://139.196.235.10:8005/comment/post_audio/", text,path);
     if(response!=null){
       hasData = true;
+      textEditingController.clear();
       point();
       update();
       url = response;
@@ -203,8 +217,10 @@ class VoiceCloneCtrl extends GetxController with GetSingleTickerProviderStateMix
     final temporary_path = "${temporary.path}/temp_audio${DateTime.now().millisecondsSinceEpoch}.wav";
     File file = File(temporary_path);
     await file.writeAsBytes(response.bodyBytes);
-    final status = await Permission.videos.request();
-    if(status.isGranted){
+    
+    // 使用兼容不同Android版本的权限请求
+    final hasPermission = await checkStoragePermission(type: 'audio');
+    if(hasPermission){
       final save_video  = VisionGallerySaver.saveFile(temporary_path);
       save_video.whenComplete(() async{
         showToast("保存成功",backgroundColor: Colors.black54,position: ToastPosition.bottom,radius: 40,textStyle: TextStyle(color: Colors.white));

@@ -167,12 +167,14 @@ class AiFace extends StatelessWidget {
                       SizedBox(height: 10,),
                       GestureDetector(
                         onTap: () async{
-                          final status = await Permission.photos.request();
-                          if(status.isGranted){
+                          // 使用兼容不同Android版本的权限请求
+                          final hasPermission = await checkStoragePermission(type: 'image');
+                          if(hasPermission){
                             final save_image = VisionGallerySaver.saveImage(
                                 ctrl.generatedImage
                             );
                             save_image.whenComplete((){
+                              showToast("保存成功");
                             });
                           }
                           else{
