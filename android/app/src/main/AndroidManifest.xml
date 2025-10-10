@@ -1,24 +1,29 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- 基础权限 -->
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- 网络访问 -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- 悬浮窗 / 前台服务 -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
-    <!-- 多媒体访问（Android 13+ 分开权限） -->
+    <!-- 多媒体访问（Android 13+） -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+
+    <!-- 音频操作 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <!-- 存储访问 -->
-    <!-- Android 10 及以下需要 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="29"/>
+        android:maxSdkVersion="29" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32"/>
-    <!-- Android 11 (API 30) 及以上申请所有文件访问 -->
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
 
     <application
         android:label="AI评论员"

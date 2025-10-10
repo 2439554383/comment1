@@ -37,8 +37,34 @@ class VoiceExtractCtrl extends GetxController {
   }
 
   @override
-  void dispose() {
+  void onClose() async {
+    // 停止播放（使用 await 确保完全停止）
+    try {
+      await audioPlayer.stop();
+      await audioPlayer.pause();
+    } catch (e) {
+      print('停止播放器时出错: $e');
+    }
     audioPlayer.dispose();
+    
+    // 清除文本控制器
+    textEditingController.dispose();
+    
+    // 重置所有状态变量
+    videoUrl = null;
+    extractedVoiceUrl = null;
+    taskId = null;
+    videoTitle = null;
+    platform = null;
+    localAudioPath = null;
+    isProcessing = false;
+    hasExtractedAudio = false;
+    isPlaying = false;
+    isComplete = false;
+    audioDuration = Duration.zero;
+    currentPosition = Duration.zero;
+    
+    print('✅ 人声提取页面已清理并重置');
     super.dispose();
   }
 
@@ -102,10 +128,7 @@ class VoiceExtractCtrl extends GetxController {
           hasExtractedAudio = true;
           point(); // 扣积分
 
-          // // 自动下载音频到本地并永久保存
-          // await _downloadAndSaveAudio();
-
-          // 加载音频供预览
+          // 加载音频供预览（不自动保存）
           await _loadAudio(extractedVoiceUrl!);
           
           showToast("人声提取完成");
@@ -188,106 +211,39 @@ class VoiceExtractCtrl extends GetxController {
     final r = await HttpUtil().post(Api.point, data: data);
   }
   
-  // 下载并保存音频到本地
-  Future<void> _downloadAndSaveAudio() async {
-    if (extractedVoiceUrl == null || extractedVoiceUrl!.isEmpty) {
-      print('extractedVoiceUrl 为空，无法下载');
-      return;
-    }
-    
-    try {
-      Loading.show();
-      
-      print('开始下载音频: $extractedVoiceUrl');
-      
-      // 下载音频文件
-      final response = await http.get(Uri.parse(extractedVoiceUrl!));
-      
-      if (response.statusCode != 200) {
-        throw Exception('下载失败，状态码: ${response.statusCode}');
-      }
-      
-      print('音频下载成功，大小: ${response.bodyBytes.length} 字节');
-      
-      // 获取应用文档目录
-      final directory = await getApplicationDocumentsDirectory();
-      print('应用目录: ${directory.path}');
-      
-      // 创建voices文件夹
-      final voicesDir = Directory('${directory.path}/voices');
-      if (!await voicesDir.exists()) {
-        await voicesDir.create(recursive: true);
-        print('创建voices文件夹: ${voicesDir.path}');
-      }
-      
-      // 生成文件名（使用视频标题+时间戳）
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      String sanitizedTitle = videoTitle ?? 'voice';
-      // 移除特殊字符
-      sanitizedTitle = sanitizedTitle.replaceAll(RegExp(r'[^\u4e00-\u9fa5a-zA-Z0-9\s-]'), '');
-      // 限制长度
-      if (sanitizedTitle.length > 20) {
-        sanitizedTitle = sanitizedTitle.substring(0, 20);
-      }
-      if (sanitizedTitle.isEmpty) {
-        sanitizedTitle = 'voice';
-      }
-      
-      final fileName = '${sanitizedTitle}_$timestamp.mp3';
-      print('文件名: $fileName');
-      
-      // 保存文件
-      final file = File('${voicesDir.path}/$fileName');
-      await file.writeAsBytes(response.bodyBytes);
-      
-      // 验证文件是否存在
-      if (await file.exists()) {
-        localAudioPath = file.path;
-        final fileSize = await file.length();
-        print('✅ 音频已成功保存到: $localAudioPath');
-        print('✅ 文件大小: $fileSize 字节');
-      } else {
-        throw Exception('文件保存失败');
-      }
-      
-      Loading.dismiss();
-    } catch (e) {
-      Loading.dismiss();
-      print('❌ 下载音频失败: $e');
-      showToast('保存音频失败');
-      rethrow;
-    }
-  }
-  
   // 跳转到语音选择页面
-  void _navigateToVoiceSelect() async {
-    if (localAudioPath == null) return;
-    
-    // 获取所有已保存的音频文件
-    final directory = await getApplicationDocumentsDirectory();
-    final voicesDir = Directory('${directory.path}/voices');
-    
-    List<String> audioFiles = [];
-    if (await voicesDir.exists()) {
-      final files = voicesDir.listSync();
-      audioFiles = files
-          .where((file) => file.path.endsWith('.mp3'))
-          .map((file) => file.path)
-          .toList();
+  void navigateToVoiceSelect() async {
+    try {
+      pause();
+      // 获取所有已保存的音频文件
+      final directory = await getApplicationDocumentsDirectory();
+      final voicesDir = Directory('${directory.path}/voices');
       
-      // 按修改时间排序，最新的在前面
-      audioFiles.sort((a, b) {
-        final aFile = File(a);
-        final bFile = File(b);
-        return bFile.lastModifiedSync().compareTo(aFile.lastModifiedSync());
+      List<String> audioFiles = [];
+      if (await voicesDir.exists()) {
+        final files = voicesDir.listSync();
+        audioFiles = files
+            .where((file) => file.path.endsWith('.mp3'))
+            .map((file) => file.path)
+            .toList();
+        
+        // 按修改时间排序，最新的在前面
+        audioFiles.sort((a, b) {
+          final aFile = File(a);
+          final bFile = File(b);
+          return bFile.lastModifiedSync().compareTo(aFile.lastModifiedSync());
+        });
+      }
+      
+      // 跳转到语音选择页面，传递音频文件列表
+      Get.to(() => const VoiceSelect(), arguments: {
+        'audioFiles': audioFiles,
+        'currentAudioPath': localAudioPath,
       });
+    } catch (e) {
+      print('跳转到语音选择页面失败: $e');
+      showToast('无法打开音频列表');
     }
-    
-    // 跳转到语音选择页面，传递音频文件列表
-    Get.to(() => const VoiceSelect(), arguments: {
-      'audioFiles': audioFiles,
-      'currentAudioPath': localAudioPath,
-    });
   }
 
   // 播放音频
@@ -353,27 +309,78 @@ class VoiceExtractCtrl extends GetxController {
   }
 
   dowload () async{
+    if (extractedVoiceUrl == null || extractedVoiceUrl!.isEmpty) {
+      showToast("没有可下载的音频");
+      return;
+    }
+
+    // 检查是否已经下载过
+    if (localAudioPath != null && await File(localAudioPath!).exists()) {
+      showToast("该音频已下载");
+      return;
+    }
+
     Loading.show();
-    final response = await http.get(Uri.parse(extractedVoiceUrl!));
-    final temporary = await getTemporaryDirectory();
-    final temporary_path = "${temporary.path}/temp_audio${DateTime.now().millisecondsSinceEpoch}.wav";
-    File file = File(temporary_path);
-    await file.writeAsBytes(response.bodyBytes);
+    try {
+      print('开始下载音频到voices目录: $extractedVoiceUrl');
 
-    // 使用兼容不同Android版本的权限请求
-    final hasPermission = await checkStoragePermission(type: 'audio');
-    if(hasPermission){
-      final save_video  = VisionGallerySaver.saveFile(temporary_path);
-      save_video.whenComplete(() async{
+      // 下载音频文件
+      final response = await http.get(Uri.parse(extractedVoiceUrl!));
+
+      if (response.statusCode != 200) {
+        throw Exception('下载失败，状态码: ${response.statusCode}');
+      }
+
+      print('音频下载成功，大小: ${response.bodyBytes.length} 字节');
+
+      // 获取应用文档目录
+      final directory = await getApplicationDocumentsDirectory();
+      print('应用目录: ${directory.path}');
+
+      // 创建voices文件夹
+      final voicesDir = Directory('${directory.path}/voices');
+      if (!await voicesDir.exists()) {
+        await voicesDir.create(recursive: true);
+        print('创建voices文件夹: ${voicesDir.path}');
+      }
+
+      // 生成文件名（使用视频标题+时间戳）
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      String sanitizedTitle = videoTitle ?? 'voice';
+      // 移除特殊字符
+      sanitizedTitle = sanitizedTitle.replaceAll(RegExp(r'[^\u4e00-\u9fa5a-zA-Z0-9\s-]'), '');
+      // 限制长度
+      if (sanitizedTitle.length > 20) {
+        sanitizedTitle = sanitizedTitle.substring(0, 20);
+      }
+      if (sanitizedTitle.isEmpty) {
+        sanitizedTitle = 'voice';
+      }
+
+      final fileName = '${sanitizedTitle}_$timestamp.mp3';
+      print('文件名: $fileName');
+
+      // 保存文件到voices目录
+      final file = File('${voicesDir.path}/$fileName');
+      await file.writeAsBytes(response.bodyBytes);
+
+      // 验证文件是否存在
+      if (await file.exists()) {
+        localAudioPath = file.path;
+        final fileSize = await file.length();
+        print('✅ 音频已成功保存到: $localAudioPath');
+        print('✅ 文件大小: $fileSize 字节');
         showToast("保存成功");
-        await file.delete();
-      });
+      } else {
+        throw Exception('文件保存失败');
+      }
+      
+    } catch (e) {
+      print('❌ 下载音频失败: $e');
+      showToast('保存失败');
+    } finally {
+      Loading.dismiss();
     }
-    else{
-      print("保存失败");
-
-    }
-    Loading.dismiss();
   }
 
   // 分享音频到微信
@@ -413,6 +420,7 @@ class VoiceExtractCtrl extends GetxController {
     taskId = null;
     videoTitle = null;
     platform = null;
+    localAudioPath = null; // 清空本地音频路径
     isProcessing = false;
     hasExtractedAudio = false;
     isPlaying = false;

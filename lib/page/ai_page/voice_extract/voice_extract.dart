@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,6 +18,7 @@ class VoiceExtract extends StatelessWidget {
     return GetBuilder(
       init: VoiceExtractCtrl(),
       builder: (VoiceExtractCtrl ctrl) => Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: AutoSizeText("人声提取"),
           actions: [
@@ -34,10 +37,13 @@ class VoiceExtract extends StatelessWidget {
               SizedBox(height: 15.h),
               videoInputCard(context, ctrl),
               SizedBox(height: 15.h),
-              audioPreviewCard(context, ctrl),
+              // 提取结果区域占满剩余空间
+              Expanded(
+                child: audioPreviewCard(context, ctrl),
+              ),
               SizedBox(height: 15.h),
               actionButtons(context, ctrl),
-              SizedBox(height: 20.h),
+              SizedBox(height: 30.h),
             ],
           ),
         ),
@@ -129,154 +135,158 @@ class VoiceExtract extends StatelessWidget {
 
   // 音频预览卡片
   Widget audioPreviewCard(BuildContext context, VoiceExtractCtrl ctrl) {
-    return Expanded(
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(20.w),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: CupertinoColors.systemGrey5,
-              blurRadius: 5,
-              spreadRadius: 1,
-            )
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                AutoSizeText(
-                  "提取结果",
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(20.w),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: CupertinoColors.systemGrey5,
+            blurRadius: 5,
+            spreadRadius: 1,
+          )
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              AutoSizeText(
+                "提取结果",
+                style: TextStyle(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.bold,
                 ),
-                if (ctrl.hasExtractedAudio)
-                  Container(
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      "内容由AI提取",
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: Colors.grey.shade600,
-                      ),
+              ),
+              if (ctrl.hasExtractedAudio)
+                Container(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    "内容由AI提取",
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: Colors.grey.shade600,
                     ),
                   ),
-              ],
-            ),
-            SizedBox(height: 15.h),
-            Expanded(
-              child: Center(
-                child: _buildPreviewContent(context, ctrl),
-              ),
-            ),
-          ],
-        ),
+                ),
+            ],
+          ),
+          SizedBox(height: 15.h),
+          Expanded(
+            child: _buildPreviewContent(context, ctrl),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildPreviewContent(BuildContext context, VoiceExtractCtrl ctrl) {
     if (ctrl.isProcessing) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
-          ),
-          SizedBox(height: 15.h),
-          AutoSizeText(
-            "正在提取人声...",
-            style: TextStyle(
-              fontSize: 16.sp,
-              color: Colors.grey.shade600,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          AutoSizeText(
-            "请稍候，这可能需要几分钟",
-            style: TextStyle(
-              fontSize: 12.sp,
-              color: Colors.grey.shade500,
-            ),
-          ),
-        ],
-      );
-    } else if (ctrl.hasExtractedAudio) {
-      return Column(
-        children: [
-          // 视频信息
-          if (ctrl.videoTitle != null) ...[
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(12.w),
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AutoSizeText(
-                    "视频标题",
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  SizedBox(height: 4.h),
-                  AutoSizeText(
-                    ctrl.videoTitle!,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w500,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
             ),
             SizedBox(height: 15.h),
+            AutoSizeText(
+              "正在提取人声...",
+              style: TextStyle(
+                fontSize: 16.sp,
+                color: Colors.grey.shade600,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            AutoSizeText(
+              "请稍候，这可能需要几分钟",
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: Colors.grey.shade500,
+              ),
+            ),
           ],
-          
-          // 音频播放器
-          Expanded(child: _buildAudioPlayer(context, ctrl)),
-        ],
+        ),
+      );
+    } else if (ctrl.hasExtractedAudio) {
+      return SingleChildScrollView(
+        child: Column(
+          children: [
+            // 视频信息
+            if (ctrl.videoTitle != null) ...[
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(12.w),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AutoSizeText(
+                      "视频标题",
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    AutoSizeText(
+                      ctrl.videoTitle!,
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w500,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 15.h),
+            ],
+            
+            // 音频播放器
+            _buildAudioPlayer(context, ctrl),
+          ],
+        ),
       );
     } else {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.record_voice_over,
-            size: 60.sp,
-            color: Colors.grey.shade400,
-          ),
-          SizedBox(height: 15.h),
-          AutoSizeText(
-            "「提取的人声将在这里显示」",
-            style: TextStyle(
-              fontSize: 16.sp,
-              color: Colors.grey.shade500,
-            ),
-          ),
-          SizedBox(height: 8.h),
-          AutoSizeText(
-            "粘贴视频链接后点击开始提取",
-            style: TextStyle(
-              fontSize: 12.sp,
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.record_voice_over,
+              size: 60.sp,
               color: Colors.grey.shade400,
             ),
-          ),
-        ],
+            SizedBox(height: 15.h),
+            AutoSizeText(
+              "「提取的人声将在这里显示」",
+              style: TextStyle(
+                fontSize: 16.sp,
+                color: Colors.grey.shade500,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            AutoSizeText(
+              "粘贴视频链接后点击开始提取",
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: Colors.grey.shade400,
+              ),
+            ),
+          ],
+        ),
       );
     }
   }
@@ -288,8 +298,8 @@ class VoiceExtract extends StatelessWidget {
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.grey.shade200),
+        // borderRadius: BorderRadius.circular(15),
+        // border: Border.all(color: Colors.grey.shade200),
       ),
       child: Column(
         children: [
@@ -369,17 +379,26 @@ class VoiceExtract extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildActionButton(
-                  context,
-                  icon: Icons.download,
-                  label: "下载",
-                  onTap: () => ctrl.dowload(),
+                FutureBuilder<bool>(
+                  future: ctrl.localAudioPath != null 
+                      ? File(ctrl.localAudioPath!).exists() 
+                      : Future.value(false),
+                  builder: (context, snapshot) {
+                    final isDownloaded = snapshot.data ?? false;
+                    return _buildActionButton(
+                      context,
+                      icon: isDownloaded ? Icons.check_circle : Icons.download,
+                      label: isDownloaded ? "已下载" : "下载",
+                      onTap: () => ctrl.dowload(),
+                      isDownloaded: isDownloaded,
+                    );
+                  },
                 ),
                 _buildActionButton(
                   context,
-                  icon: Icons.share,
-                  label: "分享",
-                  onTap: () => ctrl.shareToWeChat(),
+                  icon: Icons.library_music,
+                  label: "查看已保存",
+                  onTap: () => ctrl.navigateToVoiceSelect(),
                 ),
               ],
             ),
@@ -395,13 +414,16 @@ class VoiceExtract extends StatelessWidget {
     required IconData icon,
     required String label,
     required VoidCallback onTap,
+    bool isDownloaded = false,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
         decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
+          color: isDownloaded 
+              ? Colors.grey.shade300
+              : Theme.of(context).primaryColor,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -409,14 +431,14 @@ class VoiceExtract extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: Colors.white,
+              color: isDownloaded ? Colors.grey.shade600 : Colors.white,
               size: 18.sp,
             ),
             SizedBox(width: 5.w),
             AutoSizeText(
               label,
               style: TextStyle(
-                color: Colors.white,
+                color: isDownloaded ? Colors.grey.shade600 : Colors.white,
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
               ),

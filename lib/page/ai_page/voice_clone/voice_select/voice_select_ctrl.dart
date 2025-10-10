@@ -117,9 +117,28 @@ class VoiceSelectCtrl extends GetxController {
   }
 
   @override
-  void onClose() {
+  void onClose() async {
+    // 停止播放（使用 await 确保完全停止）
+    try {
+      await audioPlayer.stop();
+      await audioPlayer.pause();
+    } catch (e) {
+      print('停止播放器时出错: $e');
+    }
     audioPlayer.dispose();
+    
+    // 取消定时器
     positionTimer?.cancel();
+    
+    // 重置所有状态变量
+    audioFiles.clear();
+    selectedAudioIndex = 0;
+    currentAudioPath = null;
+    isPlaying = false;
+    position = Duration.zero;
+    duration = Duration.zero;
+    
+    print('✅ 音频选择页面已清理并重置');
     super.onClose();
   }
 
@@ -248,15 +267,34 @@ class VoiceSelectCtrl extends GetxController {
     }
   }
   
-  // 确认选择当前音频并返回
-  void confirmSelection() {
+  // 确认选择当前音频并返回或跳转
+  void confirmSelection() async {
+    // 先停止播放
+    if (isPlaying) {
+      await audioPlayer.pause();
+      isPlaying = false;
+      update();
+    }
+    
     if (audioFiles.isEmpty || currentAudioPath == null) {
       showToast("请先选择一个音频文件");
       return;
     }
     
-    // 返回选中的文件路径
-    Get.back(result: currentAudioPath);
+    // 检查是否有来源参数
+    final arguments = Get.arguments;
+    
+    // 如果是从声音克隆页面跳转来的（通过 pickSavedAudio），直接返回结果
+    if (arguments != null && arguments is Map && arguments.containsKey('fromVoiceClone')) {
+      print('返回到声音克隆页面，音频路径: $currentAudioPath');
+      Get.back(result: currentAudioPath);
+    } else {
+      // 否则，打开新的声音克隆页面
+      print('跳转到新的声音克隆页面，音频路径: $currentAudioPath');
+      Get.toNamed('/voice_clone', arguments: {
+        'audioPath': currentAudioPath,
+      });
+    }
   }
   
   // 刷新音频列表

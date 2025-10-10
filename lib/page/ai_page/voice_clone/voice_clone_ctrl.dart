@@ -55,15 +55,71 @@ class VoiceCloneCtrl extends GetxController with GetSingleTickerProviderStateMix
         update();
       }
     });
+    
+    // 检查是否有传递的音频路径参数
+    final arguments = Get.arguments;
+    if (arguments != null && arguments is Map && arguments.containsKey('audioPath')) {
+      final audioPath = arguments['audioPath'] as String?;
+      if (audioPath != null && audioPath.isNotEmpty) {
+        print('接收到音频路径: $audioPath');
+        // 延迟加载音频，确保UI已经初始化完成
+        Future.delayed(Duration(milliseconds: 300), () async {
+          hasData = false;
+          path = audioPath;
+          await initPlayer(path!);
+          await play();
+          update();
+        });
+      }
+    }
+    
     super.onInit();
   }
 
   @override
-  void onClose() {
+  void onClose() async {
+    // 停止播放（使用 await 确保完全停止）
+    try {
+      await player.stop();
+      await player.pause();
+    } catch (e) {
+      print('停止播放器时出错: $e');
+    }
     player.dispose();
+    
+    // 停止并清理录音
     recordTimer?.cancel();
-    record!.cancel();
-    record!.dispose();
+    try {
+      await record?.stop();
+    } catch (e) {
+      print('停止录音时出错: $e');
+    }
+    record?.cancel();
+    record?.dispose();
+    
+    // 停止动画
+    animationController.stop();
+    animationController.dispose();
+    
+    // 清除文本控制器
+    textEditingController.dispose();
+    
+    // 重置所有状态变量
+    hasData = false;
+    sourceVoice = null;
+    generatedVoiceUrl = null;
+    recognitionText = null;
+    path = null;
+    url = null;
+    myFuture = null;
+    audioDuration = null;
+    isComplete = false;
+    isRecording = false;
+    isFinish = false;
+    recordDuration = Duration.zero;
+    isPlaying = false;
+    
+    print('✅ 声音克隆页面已清理并重置');
     super.onClose();
   }
 
@@ -137,14 +193,27 @@ class VoiceCloneCtrl extends GetxController with GetSingleTickerProviderStateMix
   
   // 从已保存的音频中选择
   Future<void> pickSavedAudio() async {
-    final result = await Get.toNamed('/voice_select');
+    // 先停止当前播放
+    if (isPlaying) {
+      await pause();
+    }
+    
+    // 跳转到音频选择页面，传递 fromVoiceClone 标记
+    final result = await Get.toNamed('/voice_select', arguments: {
+      'fromVoiceClone': true,
+    });
+    
     if (result != null && result is String) {
-      print('选择的音频文件: $result');
+      print('✅ 选择的音频文件: $result');
       hasData = false;
+      isFinish = true;
       update();
       path = result;
       await initPlayer(path!);
       await play();
+      print('✅ 音频已加载并开始播放');
+    } else {
+      print('❌ 未选择音频文件');
     }
   }
 

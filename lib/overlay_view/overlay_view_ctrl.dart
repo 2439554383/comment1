@@ -133,21 +133,6 @@ class OverlayViewCtrl extends GetxController {
     // 随机动画曲线
     final curves = [
       Curves.linear,                 // 基础匀速
-      Curves.easeInOut,              // 平滑的匀速感
-      Curves.easeInOutSine,          // 更自然的缓入缓出
-      Curves.easeInOutCubic,         // 略微加速感
-      Curves.easeInOutBack,          // 带轻微回弹
-      Curves.easeInOutQuart,         // 稍微有点力量感
-      Curves.elasticOut,             // 弹性出场，注意缓和
-      Curves.bounceOut,              // 回弹效果，轻快但不急
-      Curves.decelerate,             // 缓慢停下
-      Curves.fastOutSlowIn,          // 常用流畅感
-      Curves.easeOutExpo,            // 匀速中带轻微弹性
-      Curves.easeOutQuad,            // 稳定匀速感中带小动作
-      Curves.easeInOutCirc,          // 圆滑缓入缓出
-      Curves.easeOutBack,            // 小幅回弹感
-      Curves.elasticInOut,           // 轻微弹跳的入出
-      Curves.bounceInOut,            // 回弹的入出效果
     ];
     Curve randomCurve = curves[random.nextInt(curves.length)];
 
