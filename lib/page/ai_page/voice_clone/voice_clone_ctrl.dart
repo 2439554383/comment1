@@ -275,7 +275,7 @@ class VoiceCloneCtrl extends GetxController with GetSingleTickerProviderStateMix
 
   point() async {
     final data = {
-      "template_id":1
+      "template_id":324
     };
     final r = await HttpUtil().post(Api.point,data: data);
   }

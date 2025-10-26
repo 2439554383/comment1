@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:comment1/data/user_data.dart';
 import 'package:dio/dio.dart';
 
 class ApiResult<T> {
@@ -32,6 +33,10 @@ class ApiResult<T> {
 
   ApiResult.success(Response response) {
     try {
+      if(response.data['msg']=="Token has expired" && !response.requestOptions.path.contains("/api/users/get-comment-content")){
+        UserData().logOut();
+        return;
+      }
       if(response.data['erroe']!=null){
         error = ApiError(
           code: response.data['error']['code'] ?? -1,
@@ -48,7 +53,9 @@ class ApiResult<T> {
       Map<String, dynamic> json;
       if (response.data is Map) {
         json = response.data;
-      } else {
+      }
+
+      else {
         json = jsonDecode(response.data);
       }
 

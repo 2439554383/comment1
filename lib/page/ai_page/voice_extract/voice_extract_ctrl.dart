@@ -206,7 +206,7 @@ class VoiceExtractCtrl extends GetxController {
   // 扣积分
   point() async {
     final data = {
-      "template_id": 3 // 人声提取的模板ID
+      "template_id":324
     };
     final r = await HttpUtil().post(Api.point, data: data);
   }
