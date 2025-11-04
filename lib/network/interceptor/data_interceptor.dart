@@ -16,6 +16,12 @@ class DataInterceptors extends InterceptorsWrapper {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) async{
     var code = response.data['code'];
+    print(response.data['msg']);
+    if(response.data['msg']=="Token has expired"){
+      print("可以退出登录");
+      UserData().logOut();
+      return;
+    }
      switch (code) {
       case 401:
         UserData().logOut();

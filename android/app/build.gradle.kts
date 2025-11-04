@@ -24,7 +24,7 @@ android {
         applicationId = "com.example.comment1"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 23
+        minSdk = 23  // 提升到 23 以满足 record_android 插件的要求
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

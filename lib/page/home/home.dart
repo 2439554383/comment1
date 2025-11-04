@@ -208,6 +208,7 @@ class Home extends StatelessWidget {
                                           }
                                         }
                                         else{
+
                                           Navigator.pop(context);
                                           await FlutterOverlayWindow.showOverlay(
                                             width: 150.w,

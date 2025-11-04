@@ -33,7 +33,8 @@ class ApiResult<T> {
 
   ApiResult.success(Response response) {
     try {
-      if(response.data['msg']=="Token has expired" && !response.requestOptions.path.contains("/api/users/get-comment-content")){
+      if(response.data['msg']=="Token has expired"){
+        print("可以退出登录");
         UserData().logOut();
         return;
       }
@@ -89,6 +90,12 @@ class ApiResult<T> {
 
   ApiResult.failure(DioError exception) {
     final data = exception.response?.data;
+    print(exception.response?.data['msg']);
+    if(exception.response?.data['msg']=="Token has expired"){
+      print("可以退出登录");
+      UserData().logOut();
+      return;
+    }
     if(data['error']!=null){
       error = ApiError(
         code: -1,

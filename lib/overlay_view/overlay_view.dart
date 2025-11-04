@@ -8,6 +8,9 @@ import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../common/app_preferences.dart';
+import '../network/dio_util.dart';
+import '../old_network/dio_util.dart';
 import 'overlay_view_ctrl.dart';
 
 class OverlayView extends StatelessWidget {
@@ -28,6 +31,11 @@ class OverlayView extends StatelessWidget {
     return Center(
       child: GestureDetector(
         onTap: () async{
+          final token = AppPreferences.getString(FStorageKey.token);
+          if (token != null) {
+            HttpUtil().setToken(token);
+            OldHttpUtil().setToken(token);
+          }
           await FlutterOverlayWindow.resizeOverlay(1.0, 1.0,false);
           await FlutterOverlayWindow.updateFlag(OverlayFlag.focusPointer);
           Future.delayed(Duration(milliseconds: 500),(){

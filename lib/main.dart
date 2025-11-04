@@ -14,6 +14,7 @@ import 'common/app_preferences.dart';
 import 'common/loading.dart';
 import 'data/user_data.dart';
 import 'network/dio_util.dart';
+import 'old_network/dio_util.dart';
 
 main() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -281,6 +282,12 @@ void overlayMain() async{
   await AppPreferences.init();
   HttpUtil().init();
   await UserData().init();
+  // 确保悬浮窗也能使用token
+  final token = AppPreferences.getString(FStorageKey.token);
+  if (token != null) {
+    HttpUtil().setToken(token);
+    OldHttpUtil().setToken(token);
+  }
   runApp(
       OKToast(
         child: ScreenUtilInit(
