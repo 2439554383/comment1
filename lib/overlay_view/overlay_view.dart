@@ -31,12 +31,7 @@ class OverlayView extends StatelessWidget {
     return Center(
       child: GestureDetector(
         onTap: () async{
-          final token = AppPreferences.getString(FStorageKey.token);
-          if (token != null) {
-            HttpUtil().setToken(token);
-            OldHttpUtil().setToken(token);
-          }
-          await FlutterOverlayWindow.resizeOverlay(1.0, 1.0,false);
+          await FlutterOverlayWindow.resizeOverlay(1, 1,false);
           await FlutterOverlayWindow.updateFlag(OverlayFlag.focusPointer);
           Future.delayed(Duration(milliseconds: 500),(){
             ctrl.switchWindows(true);

@@ -1,11 +1,38 @@
 import 'package:dio/dio.dart';
-import '../../../data/user_data.dart';
+import '../../common/app_preferences.dart';
+import '../../data/user_data.dart';
 
 //数据拦截器
 class DataInterceptors extends InterceptorsWrapper {
+  // 内存缓存token，避免每次请求都读取SharedPreferences
+  // 注意：这个缓存会在每次请求时与SharedPreferences同步，确保悬浮窗能获取最新token
+  static String? _cachedToken;
+  static const String _tokenKey = FStorageKey.token;
+  
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    // 从SharedPreferences读取最新token（SharedPreferences内部有缓存，读取很快）
+    // 同时更新内存缓存，下次请求时如果token没变化，可以直接使用
+    final token = AppPreferences.getString(_tokenKey);
+    
+    // 如果token变化了，更新缓存
+    if (_cachedToken != token) {
+      _cachedToken = token;
+    }
+    
+    // 使用最新的token设置请求头
+    if (token != null && token.isNotEmpty) {
+      options.headers['Authorization'] = 'Bearer $token';
+    } else {
+      // 如果没有token，确保清除Authorization头
+      options.headers.remove('Authorization');
+    }
     super.onRequest(options, handler);
+  }
+  
+  // 清除缓存的token（当收到401错误时调用）
+  static void clearTokenCache() {
+    _cachedToken = null;
   }
 
   @override
@@ -24,6 +51,8 @@ class DataInterceptors extends InterceptorsWrapper {
     }
      switch (code) {
       case 401:
+        // 清除token缓存
+        clearTokenCache();
         UserData().logOut();
         break;
       default:

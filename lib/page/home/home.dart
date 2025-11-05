@@ -211,8 +211,8 @@ class Home extends StatelessWidget {
 
                                           Navigator.pop(context);
                                           await FlutterOverlayWindow.showOverlay(
-                                            width: 150.w,
-                                            height: 150.h,
+                                            width: 150,
+                                            height: 150,
                                             enableDrag: false,
                                             alignment :OverlayAlignment.topRight,
                                             positionGravity: PositionGravity.auto,
