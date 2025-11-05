@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:comment1/data/user_data.dart';
+import 'package:comment1/network/dio_util.dart';
 import 'package:comment1/page/ai_page/ai_chat/ai_chat_ctrl.dart';
 import 'package:comment1/page/home/home_ctrl.dart';
 import 'package:comment1/route/route.dart';
@@ -222,6 +223,7 @@ class Home extends StatelessWidget {
                                           await FlutterOverlayWindow.shareData({
                                             "type":"listview",
                                             "type_overlay_list":ctrl.cueList,
+                                            "token":HttpUtil().Mytoken
                                           });
                                           ctrl.openOverlay = true;
                                           ctrl.update();

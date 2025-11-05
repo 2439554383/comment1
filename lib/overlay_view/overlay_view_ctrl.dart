@@ -47,6 +47,8 @@ class OverlayViewCtrl extends GetxController {
         switchWindows(false);
       }
       else if(event["type"] == "listview"){
+        final token = event['token'];
+        HttpUtil().setToken(token);
         print("listview");
         final rawList = event['type_overlay_list'] as List? ?? [];
         final List<CommentType> types =

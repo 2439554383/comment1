@@ -11,6 +11,7 @@ class HttpUtil {
   factory HttpUtil() => _instance;
 
   late Dio dio;
+  String? Mytoken;
   CancelToken cancelToken = CancelToken();
   late BaseOptions options;
 
@@ -56,6 +57,7 @@ class HttpUtil {
   }
 
   setToken(String token){
+    Mytoken = token;
     dio.options.headers = {"Authorization": "Bearer $token"};
   }
 
