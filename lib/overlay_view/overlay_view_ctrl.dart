@@ -1,6 +1,7 @@
 ﻿import 'dart:async';
 import 'dart:convert' show utf8;
 import 'dart:math';
+import 'dart:typed_data';
 import 'package:comment1/data/user_data.dart';
 import 'package:comment1/old_network/apis.dart';
 import 'package:dio/dio.dart';
@@ -227,6 +228,8 @@ class OverlayViewCtrl extends GetxController {
   }
 
   changeStatus(int index){
+    textEditingController1.clear();
+    selectList.forEach((e)=>e.isCheck=false);
     selectList[index].check();
     update();
   }
@@ -234,15 +237,17 @@ class OverlayViewCtrl extends GetxController {
   postComment() async{
     streamController = StreamController.broadcast();
     update();
-    List<String> postList = selectList
-        .where((e) => e.isCheck==true)
-        .map((e) => e.typeName)
-        .toList();
-    postList.add(textEditingController1.text);
+    CommentType? keys;
+    try {
+      keys = selectList
+          .firstWhere((e) => e.isCheck==true);
+    } catch (e) {
+    }
+    final customType = textEditingController1.text.trim();
     final url = textEditingController.text;
     textEditingController.clear();
     final data = {
-      "selecttext_list": postList,
+      "comment_type": customType.isNotEmpty?customType:keys?.typeName,
       "count": tcCount.text,
       "url":url
     };
@@ -253,13 +258,27 @@ class OverlayViewCtrl extends GetxController {
       print("response:${response}");
       print("responseCode:${response.code}");
       streamData.listen((chunk) {
-        // 确保 chunk 是 List<int> 类型
+        List<int>? bytes;
         if (chunk is Uint8List) {
-          // Uint8List 是 List<int> 的子类，可以直接使用
-          print("接收到片段1：$chunk");
-          if (!streamController.isClosed) {
-            streamController.add(chunk);
-          }
+          bytes = chunk;
+        }
+        else if (chunk is List<int>) {
+          bytes = List<int>.from(chunk);
+        }
+        else if (chunk is String) {
+          bytes = utf8.encode(chunk);
+        }
+
+        if (bytes == null) {
+          print("未识别的片段类型: ${chunk.runtimeType}");
+          return;
+        }
+
+        final decodedChunk = utf8.decode(bytes, allowMalformed: true);
+        print("接收到片段：$decodedChunk");
+
+        if (!streamController.isClosed) {
+          streamController.add(bytes);
         }
       }).onDone(() {
         if (!streamController.isClosed) {

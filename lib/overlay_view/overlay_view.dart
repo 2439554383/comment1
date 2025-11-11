@@ -111,6 +111,10 @@ class OverlayView extends StatelessWidget {
                       hintText: "自定义提示词",
                       hintStyle: TextStyle(fontStyle: FontStyle.italic,),
                     ),
+                    onChanged: (value){
+                      ctrl.selectList.forEach((e)=>e.isCheck=false);
+                      ctrl.update();
+                    },
                   )
               ),
               Flexible(
@@ -144,7 +148,15 @@ class OverlayView extends StatelessWidget {
                             ctrl.textEditingController.text = "获取失败";
                           }
                           else if (snapshot.hasData) {
-                            final String decodedString = utf8.decode(snapshot.data!);
+                            final dynamic chunk = snapshot.data;
+                            String decodedString = "";
+                            if (chunk is List<int>) {
+                              decodedString = utf8.decode(chunk, allowMalformed: true);
+                            } else if (chunk is String) {
+                              decodedString = chunk;
+                            } else if (chunk != null) {
+                              decodedString = chunk.toString();
+                            }
                             ctrl.textEditingController.text += decodedString;
                           }
                         }
