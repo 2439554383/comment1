@@ -31,11 +31,37 @@ class OverlayView extends StatelessWidget {
     return Center(
       child: GestureDetector(
         onTap: () async{
-          await FlutterOverlayWindow.resizeOverlay(1, 1,false);
-          await FlutterOverlayWindow.updateFlag(OverlayFlag.focusPointer);
-          Future.delayed(Duration(milliseconds: 500),(){
+          try {
+            // 点击变大：宽度保持屏幕宽度，高度变为屏幕的一半（从顶部到屏幕的一半）
+            // 使用 MediaQuery 获取实际屏幕尺寸（像素值），这样插件才能正确识别
+            final screenSize = MediaQuery.of(context).size;
+            final screenWidth = screenSize.width; // 实际屏幕宽度（像素）
+            final screenHeight = screenSize.height; // 实际屏幕高度（像素）
+            final expandedHeight = screenHeight / 2; // 屏幕高度的一半
+            
+            // 调试信息
+            print("点击变大 - 屏幕宽度: $screenWidth, 屏幕高度: $screenHeight");
+            print("点击变大 - 调整后宽度: $screenWidth, 调整后高度: $expandedHeight");
+            
+            // 先更新 flag，确保窗口可见
+            await FlutterOverlayWindow.updateFlag(OverlayFlag.focusPointer);
+            
+            // 等待一小段时间，确保 flag 更新完成
+            await Future.delayed(Duration(milliseconds: 100));
+            
+            // 调整大小到屏幕宽度和屏幕高度的一半
+            await OverlayViewCtrl.resizeOverlayWithScreenUtil(screenWidth, expandedHeight, false);
+            
+            // 再等待一下，确保 resize 完成
+            await Future.delayed(Duration(milliseconds: 200));
+            
+            // 切换窗口状态
             ctrl.switchWindows(true);
-          });
+          } catch (e) {
+            print("点击变大失败: $e");
+            // 即使失败也切换窗口状态
+            ctrl.switchWindows(true);
+          }
         },
         child: Container(
           width: double.infinity,
@@ -341,11 +367,26 @@ class OverlayView extends StatelessWidget {
                             style: ButtonStyle(
                             ),
                             onPressed: () async{
-                              ctrl.streamController.close();
-                              ctrl.clear();
-                              ctrl.switchWindows(false);
-                              await FlutterOverlayWindow.resizeOverlay(150, 150,false);
-                              await FlutterOverlayWindow.updateFlag(OverlayFlag.defaultFlag);
+                              try {
+                                ctrl.streamController.close();
+                                ctrl.clear();
+                                
+                                // 先恢复初始大小
+                                await OverlayViewCtrl.restoreInitialSize();
+                                
+                                // 等待一下，确保 resize 完成
+                                await Future.delayed(Duration(milliseconds: 200));
+                                
+                                // 更新 flag
+                                await FlutterOverlayWindow.updateFlag(OverlayFlag.defaultFlag);
+                                
+                                // 最后切换窗口状态
+                                ctrl.switchWindows(false);
+                              } catch (e) {
+                                print("最小化失败: $e");
+                                // 即使失败也切换窗口状态
+                                ctrl.switchWindows(false);
+                              }
                             }, child: FittedBox(child: Text("最小化"))),
                       ),
                     ],

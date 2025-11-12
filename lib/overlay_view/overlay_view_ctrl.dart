@@ -9,6 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import '../api/http_api.dart';
 import '../common/app_preferences.dart';
@@ -38,6 +39,10 @@ class OverlayViewCtrl extends GetxController {
   late TextEditingController tcCount = TextEditingController();
   late TextEditingController textEditingController3 = TextEditingController();
   StreamController streamController = StreamController.broadcast()..close();
+  
+  // 保存初始悬浮窗大小（使用 dp 单位，确保一致性）
+  static double initialOverlayWidth = 200.0;
+  static double initialOverlayHeight = 200.0;
   @override
   void onInit() {
     super.onInit();
@@ -322,6 +327,113 @@ class OverlayViewCtrl extends GetxController {
 
   openOverlay(bool isoverlay){
     update();
+  }
+  
+  // 将屏幕适配单位转换为实际像素值
+  // 关键：插件需要的是实际像素值（px），ScreenUtil 的 .w 和 .h 需要转换为实际像素
+  // 这个转换逻辑必须与插件的 Math.round 逻辑配合使用，确保 showOverlay 和 resizeOverlay 结果一致
+  static double convertToPx(double screenUtilValue, {bool isWidth = true}) {
+    // 使用 ScreenUtil 获取实际屏幕尺寸
+    // ScreenUtil().screenWidth 和 ScreenUtil().screenHeight 返回实际像素值
+    final screenUtil = ScreenUtil();
+    final actualScreenWidth = screenUtil.screenWidth;
+    final actualScreenHeight = screenUtil.screenHeight;
+    final designWidth = 411.0; // 设计稿宽度（从 main.dart 中的 designSize）
+    final designHeight = 915.0; // 设计稿高度
+    
+    // 计算缩放比例
+    final scale = isWidth 
+        ? (actualScreenWidth / designWidth) 
+        : (actualScreenHeight / designHeight);
+    
+    // 转换为实际像素值
+    final pixelValue = screenUtilValue * scale;
+    print("convertToPx - 输入值: $screenUtilValue, 缩放比例: $scale, 输出值: $pixelValue");
+    return pixelValue;
+  }
+  
+  // 将屏幕适配单位转换为 double（保持兼容性）
+  // 对于实际像素值（如 MediaQuery 获取的，通常 > 1000），直接返回
+  // 对于 ScreenUtil 适配值（通常 < 1000），转换为实际像素
+  // 关键：这个方法的返回值会直接传给插件，插件会使用 Math.round 四舍五入
+  // 所以 showOverlay 和 resizeOverlay 必须使用相同的转换逻辑
+  static double convertToDp(double value, {bool isWidth = true}) {
+    // 如果值很大（可能是实际像素值），直接返回
+    if (value > 1000) {
+      print("convertToDp - 实际像素值，直接返回: $value");
+      return value;
+    }
+    // 否则认为是 ScreenUtil 适配值，需要转换为实际像素
+    final result = convertToPx(value, isWidth: isWidth);
+    print("convertToDp - ScreenUtil 适配值转换: $value -> $result");
+    return result;
+  }
+  
+  // 恢复初始大小（使用保存的 ScreenUtil 适配值）
+  static Future<void> restoreInitialSize() async {
+    try {
+      final width = convertToDp(initialOverlayWidth, isWidth: true);
+      final height = convertToDp(initialOverlayHeight, isWidth: false);
+      print("restoreInitialSize - 宽度: $width, 高度: $height");
+      
+      // 确保值有效
+      if (width <= 0 || height <= 0) {
+        print("错误：恢复初始大小失败 - 宽度: $width, 高度: $height");
+        return;
+      }
+      
+      final result = await FlutterOverlayWindow.resizeOverlay(width, height, false);
+      print("restoreInitialSize - 调用成功，结果: $result");
+    } catch (e) {
+      print("restoreInitialSize - 调用失败: $e");
+    }
+  }
+  
+  // 调整大小（支持传入 .w 和 .h 值或实际像素值）
+  // 插件现在会严格按照传入的像素值设置大小，不会改变位置
+  static Future<void> resizeOverlayWithScreenUtil(double width, double height, bool flag) async {
+    // 调试信息
+    print("resizeOverlayWithScreenUtil - 传入宽度: $width, 传入高度: $height");
+    
+    // 如果值很大（可能是实际像素值，如 MediaQuery 获取的），直接使用
+    // 否则转换为实际像素值（ScreenUtil 适配值）
+    double finalWidth;
+    double finalHeight;
+    
+    if (width > 1000) {
+      // 实际像素值，直接使用
+      finalWidth = width;
+    } else {
+      // ScreenUtil 适配值，转换为实际像素
+      finalWidth = convertToPx(width, isWidth: true);
+    }
+    
+    if (height > 1000) {
+      // 实际像素值，直接使用
+      finalHeight = height;
+    } else {
+      // ScreenUtil 适配值，转换为实际像素
+      finalHeight = convertToPx(height, isWidth: false);
+    }
+    
+    // 确保值有效
+    if (finalWidth <= 0 || finalHeight <= 0) {
+      print("错误：宽度或高度无效 - 宽度: $finalWidth, 高度: $finalHeight");
+      return;
+    }
+    
+    print("resizeOverlayWithScreenUtil - 最终宽度: $finalWidth, 最终高度: $finalHeight");
+    
+    // 直接使用实际像素值，插件会严格按照这个值设置，不会改变位置
+    try {
+      final result = await FlutterOverlayWindow.resizeOverlay(finalWidth, finalHeight, flag);
+      print("resizeOverlayWithScreenUtil - 调用成功，结果: $result");
+    } catch (e) {
+      print("resizeOverlayWithScreenUtil - 调用失败: $e");
+      rethrow;
+    }
+    
+    print("resizeOverlayWithScreenUtil - 调用完成");
   }
 
 }

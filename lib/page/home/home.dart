@@ -14,6 +14,7 @@ import 'package:marquee/marquee.dart';
 import 'package:provider/provider.dart';
 
 import '../../common/app_component.dart';
+import '../../overlay_view/overlay_view_ctrl.dart';
 class Home extends StatelessWidget {
   const Home({super.key});
 
@@ -211,9 +212,15 @@ class Home extends StatelessWidget {
                                         else{
 
                                           Navigator.pop(context);
+                                          // 使用 ScreenUtil 的值，确保可以传入 200.w 和 200.h
+                                          final overlayWidth = 200.w;
+                                          final overlayHeight = 200.h;
+                                          // 保存初始大小
+                                          OverlayViewCtrl.initialOverlayWidth = overlayWidth;
+                                          OverlayViewCtrl.initialOverlayHeight = overlayHeight;
                                           await FlutterOverlayWindow.showOverlay(
-                                            width: 150,
-                                            height: 150,
+                                            width: OverlayViewCtrl.convertToDp(overlayWidth, isWidth: true),
+                                            height: OverlayViewCtrl.convertToDp(overlayHeight, isWidth: false),
                                             enableDrag: false,
                                             alignment :OverlayAlignment.topRight,
                                             positionGravity: PositionGravity.auto,
