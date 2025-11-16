@@ -247,7 +247,7 @@ public class OverlayService extends Service implements View.OnTouchListener {
     }
 
     // 修复后的 resizeOverlay 方法：严格按照传入的 double 值设置大小
-    // 当窗口变大时，如果宽度接近屏幕宽度，则从顶部开始显示
+    // 关键修复：使用 getRealMetrics() 获取真实屏幕尺寸，确保传入的物理像素值被正确使用
     private void resizeOverlay(double width, double height, boolean enableDrag, MethodChannel.Result result) {
         if (windowManager != null && flutterView != null) {
             try {
@@ -258,29 +258,56 @@ public class OverlayService extends Service implements View.OnTouchListener {
                     return;
                 }
                 
-                // 获取屏幕尺寸
+                // 关键修复：使用 getRealMetrics() 而不是 getMetrics()
+                // getMetrics() 返回应用窗口尺寸（不包括系统栏），可能不准确
+                // getRealMetrics() 返回真实的物理屏幕尺寸（包括所有像素）
                 DisplayMetrics metrics = new DisplayMetrics();
-                windowManager.getDefaultDisplay().getMetrics(metrics);
+                Display display = windowManager.getDefaultDisplay();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    display.getRealMetrics(metrics);
+                } else {
+                    display.getMetrics(metrics);
+                }
                 int screenWidth = metrics.widthPixels;
                 int screenHeight = metrics.heightPixels;
                 
+                // 详细的调试日志
+                Log.d("OverlayService", "resizeOverlay - 接收到的参数: width=" + width + ", height=" + height);
+                Log.d("OverlayService", "resizeOverlay - 屏幕尺寸: " + screenWidth + "x" + screenHeight);
+                Log.d("OverlayService", "resizeOverlay - 当前窗口尺寸: " + params.width + "x" + params.height);
+                
                 // 严格按照传入的 double 值设置大小（转换为 int，因为 LayoutParams 需要 int）
+                // 注意：这里直接使用传入的值，不做任何单位转换（假设传入的是物理像素）
                 int newWidth = (int) Math.round(width);
                 int newHeight = (int) Math.round(height);
+                
+                Log.d("OverlayService", "resizeOverlay - 转换后尺寸: " + newWidth + "x" + newHeight);
+                
+                // 最小尺寸限制（避免悬浮窗变得太小而消失）
+                final int MIN_WIDTH = 50;
+                final int MIN_HEIGHT = 50;
                 
                 // 确保值有效（不能为0或负数）
                 if (newWidth <= 0) {
                     Log.e("OverlayService", "resizeOverlay: 宽度无效: " + width);
                     newWidth = WindowManager.LayoutParams.WRAP_CONTENT;
+                } else if (newWidth < MIN_WIDTH && newWidth != WindowManager.LayoutParams.WRAP_CONTENT && newWidth != WindowManager.LayoutParams.MATCH_PARENT) {
+                    Log.w("OverlayService", "resizeOverlay: 宽度太小 (" + newWidth + "), 使用最小值: " + MIN_WIDTH);
+                    newWidth = MIN_WIDTH;
                 }
                 if (newHeight <= 0) {
                     Log.e("OverlayService", "resizeOverlay: 高度无效: " + height);
                     newHeight = WindowManager.LayoutParams.WRAP_CONTENT;
+                } else if (newHeight < MIN_HEIGHT && newHeight != WindowManager.LayoutParams.WRAP_CONTENT && newHeight != WindowManager.LayoutParams.MATCH_PARENT) {
+                    Log.w("OverlayService", "resizeOverlay: 高度太小 (" + newHeight + "), 使用最小值: " + MIN_HEIGHT);
+                    newHeight = MIN_HEIGHT;
                 }
                 
                 // 判断是否需要调整位置
                 // 如果新宽度接近屏幕宽度（大于屏幕宽度的80%），则从顶部开始显示
                 boolean isFullWidth = newWidth >= screenWidth * 0.8;
+                
+                Log.d("OverlayService", "resizeOverlay - 全屏模式判断: isFullWidth=" + isFullWidth + " (newWidth=" + newWidth + ", screenWidth*0.8=" + (screenWidth * 0.8) + ")");
                 
                 if (isFullWidth) {
                     // 全屏宽度模式：从顶部开始，左上角对齐
@@ -289,18 +316,14 @@ public class OverlayService extends Service implements View.OnTouchListener {
                     params.y = 0;
                     Log.d("OverlayService", "resizeOverlay: 全屏宽度模式，设置位置为 (0, 0)");
                 } else {
-                    // 小窗口模式：保持原有位置和 gravity（如果存在）
-                    // 如果当前没有设置位置，使用默认位置
-                    if (params.gravity == 0) {
-                        params.gravity = WindowSetup.gravity;
-                    }
-                    // 如果 x 或 y 为 0 或未设置，使用默认值
-                    if (params.x == 0 && params.y == 0) {
-                        // 使用初始位置或默认位置
-                        params.x = 0;
-                        params.y = screenHeight / 8; // 距离顶部1/8
-                    }
-                    Log.d("OverlayService", "resizeOverlay: 小窗口模式，保持位置: (" + params.x + ", " + params.y + ")");
+                    // 小窗口模式：恢复初始位置（右上角，距离顶部1/8）
+                    // 使用与 showOverlay 时相同的对齐方式
+                    params.gravity = WindowSetup.gravity; // 通常是 TOP | RIGHT
+                    // 对于右上角对齐，x=0 表示贴右边缘
+                    params.x = 0;
+                    // y 位置：距离顶部1/8屏幕高度（与 showOverlay 的 startPosition 一致）
+                    params.y = screenHeight / 8;
+                    Log.d("OverlayService", "resizeOverlay: 小窗口模式，恢复初始位置: gravity=" + params.gravity + ", x=" + params.x + ", y=" + params.y);
                 }
                 
                 // 设置新的大小
@@ -313,8 +336,10 @@ public class OverlayService extends Service implements View.OnTouchListener {
                 // 更新布局
                 windowManager.updateViewLayout(flutterView, params);
                 
-                Log.d("OverlayService", "resizeOverlay 成功 - 宽度: " + params.width + ", 高度: " + params.height + 
-                      ", 位置: (" + params.x + ", " + params.y + "), gravity: " + params.gravity);
+                // 验证最终设置的值
+                WindowManager.LayoutParams finalParams = (WindowManager.LayoutParams) flutterView.getLayoutParams();
+                Log.d("OverlayService", "resizeOverlay 成功 - 最终宽度: " + finalParams.width + ", 最终高度: " + finalParams.height + 
+                      ", 位置: (" + finalParams.x + ", " + finalParams.y + "), gravity: " + finalParams.gravity);
                 result.success(true);
             } catch (Exception e) {
                 Log.e("OverlayService", "resizeOverlay 失败", e);

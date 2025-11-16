@@ -392,48 +392,74 @@ class OverlayViewCtrl extends GetxController {
   // 调整大小（支持传入 .w 和 .h 值或实际像素值）
   // 插件现在会严格按照传入的像素值设置大小，不会改变位置
   static Future<void> resizeOverlayWithScreenUtil(double width, double height, bool flag) async {
-    // 调试信息
-    print("resizeOverlayWithScreenUtil - 传入宽度: $width, 传入高度: $height");
+    // 详细的调试信息
+    print("===========================================");
+    print("resizeOverlayWithScreenUtil - 开始");
+    print("resizeOverlayWithScreenUtil - 传入宽度: $width (类型: ${width.runtimeType})");
+    print("resizeOverlayWithScreenUtil - 传入高度: $height (类型: ${height.runtimeType})");
     
-    // 如果值很大（可能是实际像素值，如 MediaQuery 获取的），直接使用
+    // 如果值很大（可能是实际像素值，如 PlatformDispatcher 获取的），直接使用
     // 否则转换为实际像素值（ScreenUtil 适配值）
     double finalWidth;
     double finalHeight;
     
     if (width > 1000) {
       // 实际像素值，直接使用
+      print("resizeOverlayWithScreenUtil - 宽度 > 1000，认为是物理像素，直接使用: $width");
       finalWidth = width;
     } else {
       // ScreenUtil 适配值，转换为实际像素
+      print("resizeOverlayWithScreenUtil - 宽度 <= 1000，认为是 ScreenUtil 适配值，需要转换");
       finalWidth = convertToPx(width, isWidth: true);
+      print("resizeOverlayWithScreenUtil - 宽度转换后: $finalWidth");
     }
     
     if (height > 1000) {
       // 实际像素值，直接使用
+      print("resizeOverlayWithScreenUtil - 高度 > 1000，认为是物理像素，直接使用: $height");
       finalHeight = height;
     } else {
       // ScreenUtil 适配值，转换为实际像素
+      print("resizeOverlayWithScreenUtil - 高度 <= 1000，认为是 ScreenUtil 适配值，需要转换");
       finalHeight = convertToPx(height, isWidth: false);
+      print("resizeOverlayWithScreenUtil - 高度转换后: $finalHeight");
     }
     
-    // 确保值有效
-    if (finalWidth <= 0 || finalHeight <= 0) {
-      print("错误：宽度或高度无效 - 宽度: $finalWidth, 高度: $finalHeight");
+    // 确保值有效（不能为0或负数，也不能太小）
+    final MIN_SIZE = 50.0; // 最小尺寸50像素
+    if (finalWidth <= 0) {
+      print("错误：宽度无效 - 宽度: $finalWidth");
+      print("===========================================");
       return;
+    } else if (finalWidth < MIN_SIZE) {
+      print("警告：宽度太小 ($finalWidth), 使用最小值: $MIN_SIZE");
+      finalWidth = MIN_SIZE;
+    }
+    if (finalHeight <= 0) {
+      print("错误：高度无效 - 高度: $finalHeight");
+      print("===========================================");
+      return;
+    } else if (finalHeight < MIN_SIZE) {
+      print("警告：高度太小 ($finalHeight), 使用最小值: $MIN_SIZE");
+      finalHeight = MIN_SIZE;
     }
     
-    print("resizeOverlayWithScreenUtil - 最终宽度: $finalWidth, 最终高度: $finalHeight");
+    print("resizeOverlayWithScreenUtil - 最终宽度: $finalWidth (像素)");
+    print("resizeOverlayWithScreenUtil - 最终高度: $finalHeight (像素)");
+    print("resizeOverlayWithScreenUtil - 准备调用插件 resizeOverlay...");
     
     // 直接使用实际像素值，插件会严格按照这个值设置，不会改变位置
     try {
       final result = await FlutterOverlayWindow.resizeOverlay(finalWidth, finalHeight, flag);
       print("resizeOverlayWithScreenUtil - 调用成功，结果: $result");
-    } catch (e) {
+    } catch (e, stackTrace) {
       print("resizeOverlayWithScreenUtil - 调用失败: $e");
+      print("resizeOverlayWithScreenUtil - 堆栈: $stackTrace");
       rethrow;
     }
     
     print("resizeOverlayWithScreenUtil - 调用完成");
+    print("===========================================");
   }
 
 }

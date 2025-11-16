@@ -2,6 +2,8 @@
 import 'package:comment1/page/home/home.dart';
 import 'package:comment1/page/person/personal_center/open_member/open_member.dart';
 import 'package:comment1/page/person/personal_center/privacy_policy/privacy_policy.dart';
+import 'package:comment1/page/person/personal_center/user_agreement/user_agreement.dart';
+import 'package:comment1/page/person/personal_center/feedback_report/feedback_report.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import '../overlay_view/overlay_view.dart';
@@ -67,6 +69,8 @@ class Froute{
   static const String tabPage = '/tabPage';
   static const String open_member = '/open_member';
   static const String privacy_policy = '/privacy_policy';
+  static const String user_agreement = '/user_agreement';
+  static const String feedback_report = '/feedback_report';
 
 
   static List<GetPage> getPages = [
@@ -99,6 +103,8 @@ class Froute{
     GetPage(name: userAccount, page: () => UserAccount()),
     GetPage(name: open_member, page: () => OpenMember()),
     GetPage(name: privacy_policy, page: () => PrivacyPolicy()),
+    GetPage(name: user_agreement, page: () => UserAgreement()),
+    GetPage(name: feedback_report, page: () => FeedbackReport()),
 
   ];
 

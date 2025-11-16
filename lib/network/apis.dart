@@ -24,5 +24,6 @@ class Api {
   static const String putPassword = "/api/users/change-password"; //修改密码
   static const String putUserinfo = "/api/users/profile"; //修改用户信息
   static const String favoriteList = "/api/users/favorite-templates"; //获取收藏评论
+  static const String feedbackReport = "/api/users/feedback-report"; //提交反馈/举报
 
 }

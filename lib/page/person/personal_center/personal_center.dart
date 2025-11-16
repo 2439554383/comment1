@@ -21,17 +21,19 @@ class PersonalCenter extends StatelessWidget {
             body: SafeArea(
               child: Container(
                 padding: EdgeInsets.all(15.r),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    userInfo(context,ctrl),
-                    SizedBox(height:20.h),
-                    memberItem(context,ctrl),
-                    SizedBox(height:20.h),
-                    ...List.generate(ctrl.itemName.length, (index){
-                      return funcItem(context, ctrl, index);
-                    })
-                  ],
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      userInfo(context,ctrl),
+                      SizedBox(height:20.h),
+                      memberItem(context,ctrl),
+                      SizedBox(height:20.h),
+                      ...List.generate(ctrl.itemName.length, (index){
+                        return funcItem(context, ctrl, index);
+                      })
+                    ],
+                  ),
                 ),
               ),
             ),

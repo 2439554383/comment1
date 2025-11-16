@@ -77,9 +77,9 @@ class HomeCtrl extends GetxController with GetTickerProviderStateMixin{
   }
   //var
   List iconList = [
-    Icon(Icons.face, size: 45.r, color: Colors.deepPurpleAccent.shade200),
-    Icon(HugeIcons.strokeRoundedAiVoice, size: 45.r, color: Colors.blueGrey.shade500),
-    Icon(Icons.image, size: 45.r, color: Colors.deepPurple.shade500),
+    // Icon(Icons.face, size: 45.r, color: Colors.deepPurpleAccent.shade200),
+    // Icon(HugeIcons.strokeRoundedAiVoice, size: 45.r, color: Colors.blueGrey.shade500),
+    // Icon(Icons.image, size: 45.r, color: Colors.deepPurple.shade500),
     Icon(Icons.water_drop, size: 45.r, color: Colors.purple.shade400),
     Icon(Icons.keyboard_voice_sharp, size: 45.r, color: Colors.purple.shade400),
     // Icon(HugeIcons.strokeRoundedPpt01, size: 30, color: Colors.indigoAccent.shade200),
@@ -89,9 +89,9 @@ class HomeCtrl extends GetxController with GetTickerProviderStateMixin{
 
   ];
   List routeList = [
-    () => Froute.push(Froute.aiFace),
-    () => Froute.push(Froute.voiceClone),
-    () => Froute.push(Froute.aiImage),
+    // () => Froute.push(Froute.aiFace),
+    // () => Froute.push(Froute.voiceClone),
+    // () => Froute.push(Froute.aiImage),
     () => Froute.push(Froute.waterMark),
     () => Froute.push(Froute.voiceExtract),
     // () => {showToast("暂未开放")},
@@ -104,9 +104,9 @@ class HomeCtrl extends GetxController with GetTickerProviderStateMixin{
     '使用流程：\n1.在等任意平台浏览时，点击“悬浮窗”按钮，\n2.弹出功能界面，复制链接并选择类型和字数，\n3.自动分析视频并生成评论，用户可以直接使用或编辑后发布；'
   ];
   List textList = [
-    "Ai换脸",
-    "声音克隆",
-    "Ai生图",
+    // "Ai换脸",
+    // "声音克隆",
+    // "Ai生图",
     "去水印",
     "提取人声",
     // "PPT生成",
