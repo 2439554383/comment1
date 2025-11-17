@@ -45,7 +45,7 @@ class AiChat extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 FittedBox(child: CircularProgressIndicator()),
-                SizedBox(height: 5,),
+                SizedBox(height: 5.h,),
                 AutoSizeText("正在思考中…")
               ],
             ));
@@ -86,11 +86,11 @@ class AiChat extends StatelessWidget {
               height: MediaQuery.of(context).size.height,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 15,
+                spacing: 15.w,
                 children: [
-                  ClipRRect(child: Image.asset("assets/images/appicon.png",width: 55,height: 55,fit: BoxFit.cover,),borderRadius: BorderRadius.circular(25),),
-                  Text(ctrl.desc,style: TextStyle(fontSize: 23),),
-                  ctrl.type=="智能助手"?Text("我可以帮你答疑、写作、搜索、分析、快来跟我聊天吧",style: TextStyle(color: Colors.grey.shade600),):SizedBox.shrink()
+                  ClipRRect(child: Image.asset("assets/images/appicon.png",width: 55.w,height: 55.h,fit: BoxFit.cover,),borderRadius: BorderRadius.circular(25.r),),
+                  Text(ctrl.desc,style: TextStyle(fontSize: 23.sp),),
+                  ctrl.type=="智能助手"?Text("我可以帮你答疑、写作、搜索、分析、快来跟我聊天吧",style: TextStyle(color: Colors.grey.shade600,fontSize: 14.sp),):SizedBox.shrink()
                 ],
               ),
             ),
@@ -110,7 +110,7 @@ class AiChat extends StatelessWidget {
               Container(
                   padding: EdgeInsets.symmetric(horizontal: 25.w),
                   alignment: Alignment.centerLeft,
-                  child: Text("内容由Ai生成")
+                  child: Text("内容由Ai生成",style: TextStyle(fontSize: 12.sp),)
               ),
               Expanded(
                 child: GestureDetector(
@@ -118,10 +118,10 @@ class AiChat extends StatelessWidget {
                     ctrl.pickImage();
                   },
                   child: Container(
-                    padding: EdgeInsets.only(bottom: 5),
+                    padding: EdgeInsets.only(bottom: 5.h),
                     width: MediaQuery.of(context).size.width,
                     alignment: Alignment.centerRight,
-                    child: ctrl.hasImage?ClipRRect(borderRadius:BorderRadius.circular(10),child: Image.file(ctrl.file!,width: 45,height: 45,fit: BoxFit.cover,)):Icon(Icons.add_photo_alternate,size: 50,color: Theme.of(context).primaryColor,),
+                    child: ctrl.hasImage?ClipRRect(borderRadius:BorderRadius.circular(10.r),child: Image.file(ctrl.file!,width: 45.w,height: 45.h,fit: BoxFit.cover,)):Icon(Icons.add_photo_alternate,size: 50.r,color: Theme.of(context).primaryColor,),
                   ),
                 ),
               ),
@@ -135,12 +135,12 @@ class AiChat extends StatelessWidget {
           Container(
             width: double.infinity,
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20.r),
                 boxShadow: [
                   BoxShadow(
                       color: CupertinoColors.systemGrey5,
-                      blurRadius: 0.5,
-                      spreadRadius:1
+                      blurRadius: 0.5.r,
+                      spreadRadius:1.r
                   )
                 ]
             ),
@@ -152,11 +152,11 @@ class AiChat extends StatelessWidget {
                   filled: true ,
                   hintText: ctrl.hintText,
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20.r),
                     borderSide: BorderSide(color: Colors.white),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20.r),
                     borderSide: BorderSide(color: Colors.white),
                   ),
                   suffixIcon: TextButton(

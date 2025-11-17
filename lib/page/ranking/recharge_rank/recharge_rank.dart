@@ -117,9 +117,9 @@ class RechargeRank extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.1),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 2),
+                spreadRadius: 2.r,
+                blurRadius: 5.r,
+                offset: Offset(0, 2.h),
               ),
             ],
           ),

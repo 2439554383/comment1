@@ -105,7 +105,7 @@ class AiFace extends StatelessWidget {
       child: Container(
           alignment: Alignment.center,
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10.r),
               color: Colors.white
           ),
           child: FutureBuilder(
@@ -164,7 +164,7 @@ class AiFace extends StatelessWidget {
                 else if(snapshot.hasData){
                   return Column(
                     children: [
-                      SizedBox(height: 10,),
+                      SizedBox(height: 10.h,),
                       GestureDetector(
                         onTap: () async{
                           // 使用兼容不同Android版本的权限请求
@@ -261,7 +261,7 @@ class AiFace extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(FontAwesomeIcons.magic),
-              SizedBox(width: 5,),
+              SizedBox(width: 5.w,),
               AutoSizeText("换脸",style: TextStyle(fontSize: 16.sp,fontWeight: FontWeight.w500,color: Colors.white))
             ],
           ),

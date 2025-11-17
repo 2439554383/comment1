@@ -63,7 +63,7 @@ class WaterMark extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CircularProgressIndicator(),
-                      SizedBox(height: 10,),
+                      SizedBox(height: 10.h,),
                       AutoSizeText("努力去水印中，请稍候～")
                     ],
                   );
@@ -72,7 +72,7 @@ class WaterMark extends StatelessWidget {
                   if(ctrl.videoPlayerController != null && ctrl.videoPlayerController!.value.isInitialized){
                     return Column(
                       children: [
-                        SizedBox(height: 10,),
+                        SizedBox(height: 10.h,),
                         GestureDetector(
                           onTap: () async{
                               ctrl.saveFile();
@@ -111,12 +111,12 @@ class WaterMark extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(20.r),
           boxShadow: [
             BoxShadow(
                 color: CupertinoColors.systemGrey5,
-                blurRadius: 0.5,
-                spreadRadius:1
+                blurRadius: 0.5.r,
+                spreadRadius:1.r
             )
           ]
       ),
@@ -128,11 +128,11 @@ class WaterMark extends StatelessWidget {
             filled: true ,
             hintText: "粘贴视频链接（抖音、快手等）",
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(20.r),
               borderSide: BorderSide(color: Colors.white,),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(20.r),
               borderSide: BorderSide(color: Colors.white),
             ),
             suffixIcon: TextButton(

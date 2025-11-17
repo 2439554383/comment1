@@ -50,7 +50,7 @@ class AiImage extends StatelessWidget {
                 child: Container(
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(10.r),
                     ),
                     child: FutureBuilder(
                         future: ctrl.imageFuture,
@@ -60,7 +60,7 @@ class AiImage extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 CircularProgressIndicator(),
-                                SizedBox(height: 10,),
+                                SizedBox(height: 10.h,),
                                 AutoSizeText("正在生成图片～")
                               ],
                             );
@@ -68,7 +68,7 @@ class AiImage extends StatelessWidget {
                           else if(snapshot.hasData){
                             return Column(
                               children: [
-                                SizedBox(height: 10,),
+                                SizedBox(height: 10.h,),
                                 GestureDetector(
                                   onTap: () async{
                                     ctrl.download();
@@ -116,12 +116,12 @@ class AiImage extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(20.r),
           boxShadow: [
             BoxShadow(
                 color: CupertinoColors.systemGrey5,
-                blurRadius: 0.5,
-                spreadRadius:1
+                blurRadius: 0.5.r,
+                spreadRadius:1.r
             )
           ]
       ),
@@ -133,11 +133,11 @@ class AiImage extends StatelessWidget {
             filled: true ,
             hintText: ctrl.defaultHint,
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(20.r),
               borderSide: BorderSide(color: Colors.white,),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(20.r),
               borderSide: BorderSide(color: Colors.white),
             ),
             suffixIcon: TextButton(style:ButtonStyle(backgroundColor: WidgetStatePropertyAll(Theme.of(context).primaryColor)),onPressed: () async{

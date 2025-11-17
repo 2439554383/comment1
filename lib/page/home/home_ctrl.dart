@@ -78,10 +78,10 @@ class HomeCtrl extends GetxController with GetTickerProviderStateMixin{
   //var
   List iconList = [
     // Icon(Icons.face, size: 45.r, color: Colors.deepPurpleAccent.shade200),
-    // Icon(HugeIcons.strokeRoundedAiVoice, size: 45.r, color: Colors.blueGrey.shade500),
-    // Icon(Icons.image, size: 45.r, color: Colors.deepPurple.shade500),
-    Icon(Icons.water_drop, size: 45.r, color: Colors.purple.shade400),
-    Icon(Icons.keyboard_voice_sharp, size: 45.r, color: Colors.purple.shade400),
+    // Icon(HugeIcons.strokeRoundedAiVoice, size: 35.r, color: Colors.blueGrey.shade500),
+    // Icon(Icons.image, size: 35.r, color: Colors.deepPurple.shade500),
+    Icon(Icons.water_drop, size: 35.r, color: Colors.purple.shade400),
+    Icon(Icons.keyboard_voice_sharp, size: 35.r, color: Colors.purple.shade400),
     // Icon(HugeIcons.strokeRoundedPpt01, size: 30, color: Colors.indigoAccent.shade200),
     // Icon(Icons.video_call_outlined, size: 30, color: Colors.amberAccent.shade200),
     // Icon(CupertinoIcons.heart, size: 30, color: Colors.pinkAccent.shade200),
@@ -133,10 +133,10 @@ class HomeCtrl extends GetxController with GetTickerProviderStateMixin{
     "起名",
   ];
   List iconList1 = [
-    Icon(Icons.dining_outlined, color: Colors.lightGreen, size: 35),
-    Icon(Icons.local_fire_department, color: Colors.redAccent, size: 35),
-    Icon(Icons.edit_note, color: Colors.indigo, size: 35),
-    Icon(CupertinoIcons.lightbulb, color: Colors.cyan, size: 35),
+    Icon(Icons.dining_outlined, color: Colors.lightGreen, size: 35.r),
+    Icon(Icons.local_fire_department, color: Colors.redAccent, size: 35.r),
+    Icon(Icons.edit_note, color: Colors.indigo, size: 35.r),
+    Icon(CupertinoIcons.lightbulb, color: Colors.cyan, size: 35.r),
 
   ];
   bool openOverlay = false;

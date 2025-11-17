@@ -43,6 +43,12 @@ class OverlayViewCtrl extends GetxController {
   // 保存初始悬浮窗大小（使用 dp 单位，确保一致性）
   static double initialOverlayWidth = 200.0;
   static double initialOverlayHeight = 200.0;
+
+  Size size = Size(411, 915);
+
+  bool resizeing = false;
+  double get widthRatio => size.width/411;
+  double get heightRatio => size.height/915;
   @override
   void onInit() {
     super.onInit();
@@ -54,6 +60,12 @@ class OverlayViewCtrl extends GetxController {
       }
       else if(event["type"] == "listview"){
         final token = event['token'];
+        // 从 event 中获取屏幕尺寸（已改为分别传递 width 和 height）
+        final screenWidth = event['screen_width'] ?? 411.0;
+        final screenHeight = event['screen_height'] ?? 915.0;
+        final width = screenWidth is double ? screenWidth : screenWidth.toDouble();
+        final height = screenHeight is double ? screenHeight : screenHeight.toDouble();
+        size = Size(width, height);
         HttpUtil().setToken(token);
         print("listview");
         final rawList = event['type_overlay_list'] as List? ?? [];
@@ -84,7 +96,7 @@ class OverlayViewCtrl extends GetxController {
     final random = Random();
 
     // top 范围 100 ~ 200
-    double randomTop = 100 + random.nextInt(101).toDouble();
+    double randomTop = 100 * heightRatio + (random.nextInt(101).toDouble()) * heightRatio;
 
     // 更柔和的彩色列表
     final colors = [
@@ -151,7 +163,7 @@ class OverlayViewCtrl extends GetxController {
           left: 0,
           right: 0,
           child: TweenAnimationBuilder<double>(
-            tween: Tween(begin: -200, end: MediaQuery.of(context).size.width),
+            tween: Tween(begin: -200 * widthRatio, end: MediaQuery.of(context).size.width),
             duration: const Duration(seconds: 3),
             curve: randomCurve, // 使用随机动画曲线
             builder: (context, value, child) {
@@ -161,15 +173,15 @@ class OverlayViewCtrl extends GetxController {
                   color: Colors.transparent,
                   child: Center(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: EdgeInsets.symmetric(horizontal: 16 * widthRatio, vertical: 8 * heightRatio),
                       decoration: BoxDecoration(
                         color: randomColor,
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(20 * widthRatio),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
-                            blurRadius: 6,
-                            offset: Offset(0, 3),
+                            blurRadius: 6 * widthRatio,
+                            offset: Offset(0, 3 * heightRatio),
                           ),
                         ],
                       ),
@@ -177,13 +189,13 @@ class OverlayViewCtrl extends GetxController {
                         randomMessage,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 16,
+                          fontSize: 16 * widthRatio,
                           fontWeight: FontWeight.w500,
                           shadows: [
                             Shadow(
                               color: Colors.black.withOpacity(0.2),
-                              blurRadius: 2,
-                              offset: Offset(1, 1),
+                              blurRadius: 2 * widthRatio,
+                              offset: Offset(1 * widthRatio, 1 * heightRatio),
                             ),
                           ],
                         ),

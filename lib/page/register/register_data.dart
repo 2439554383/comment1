@@ -1,5 +1,7 @@
-﻿import 'package:comment1/mixin/color.dart';
+﻿import 'package:comment1/common/app_component.dart';
+import 'package:comment1/mixin/color.dart';
 import 'package:comment1/mixin/validate.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -31,11 +33,7 @@ class RegisterData extends StatelessWidget with FormValidationMixin{
                   controller: ctrl.usernameCtrl,
                 ),
                 SizedBox(height: 15.h),
-                inputField(
-                  label: "行业",
-                  hint: "请输入您的行业",
-                  controller: ctrl.industryCtrl,
-                ),
+                selectItem(ctrl: ctrl, label: "行业", hint: "请选择行业", controller: ctrl.industryCtrl),
                 SizedBox(height: 15.h),
                 inputField(
                   label: "城市",
@@ -83,6 +81,50 @@ class RegisterData extends StatelessWidget with FormValidationMixin{
             contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
           ),
         ),
+      ],
+    );
+  }
+  /// 封装的输入框
+  Widget selectItem({
+    required RegisterCtrl ctrl,
+    required String label,
+    required String hint,
+    required TextEditingController controller,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500,color: Colors.black)),
+        SizedBox(height: 10.h),
+        GestureDetector(
+          onTap: (){
+            showPicker(ctrl.industoryList, (value){
+              ctrl.selectIndustory(value.first);
+            });
+          },
+          behavior: HitTestBehavior.opaque,
+          child: AbsorbPointer(
+            child: TextFormField(
+              controller: controller,
+              validator: (value){
+                return validateRequired(value, label);
+              },
+              decoration: InputDecoration(
+                hintText: hint,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                hintStyle: TextStyle(color: CustomColors.fontGrey),
+                contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+                suffixIconConstraints: BoxConstraints(),
+                suffixIcon: Container(
+                  margin: EdgeInsets.only(right: 15.w),
+                  child: Icon(CupertinoIcons.chevron_compact_down,size:20.sp,color: Colors.grey),
+                )
+              ),
+            ),
+          ),
+        )
       ],
     );
   }

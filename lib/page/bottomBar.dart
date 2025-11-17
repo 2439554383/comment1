@@ -1,5 +1,6 @@
 // 底部导航栏
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../common/app_component.dart';
 import '../common/color_standard.dart';
 
@@ -36,7 +37,7 @@ class _BottomBarState extends State<BottomBar> {
                           color: widget.currentIndex == 0
                               ? ColorStandard.main
                               : Color(0xff777777),
-                          fontSize: 12
+                          fontSize: 12.sp
                       ),
                     ),
                   ]),
@@ -58,7 +59,7 @@ class _BottomBarState extends State<BottomBar> {
                           color: widget.currentIndex == 1
                               ? ColorStandard.main
                               : Color(0xff777777),
-                          fontSize: 12
+                          fontSize: 12.sp
                       ),
                     ),
                   ],
@@ -80,7 +81,7 @@ class _BottomBarState extends State<BottomBar> {
                         color: widget.currentIndex == 2
                             ? ColorStandard.main
                             : Color(0xff777777),
-                        fontSize: 12
+                        fontSize: 12.sp
                     ),
                   ),
                 ],
@@ -102,7 +103,7 @@ class _BottomBarState extends State<BottomBar> {
                         color: widget.currentIndex == 3
                             ? ColorStandard.main
                             : Color(0xff777777),
-                        fontSize: 12
+                        fontSize: 12.sp
                     ),
                   ),
                 ],
@@ -125,7 +126,7 @@ class _BottomBarState extends State<BottomBar> {
                         color: widget.currentIndex == 4
                             ? ColorStandard.main
                             : Color(0xff777777),
-                        fontSize: 12
+                        fontSize: 12.sp
                     ),
                   ),
                 ],

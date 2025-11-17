@@ -118,7 +118,7 @@ class Register extends StatelessWidget with FormValidationMixin{
       height: 44.h,
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: BorderRadius.all(Radius.circular(12.r)),
           gradient: LinearGradient(
               colors: [
                 Colors.orangeAccent,

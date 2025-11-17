@@ -33,17 +33,17 @@ class OpenMember extends StatelessWidget {
                           ctrl.update();
                         },
                         child: Container(
-                          padding: EdgeInsets.all(15),
+                          padding: EdgeInsets.all(15.r),
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(12)),
+                            borderRadius: BorderRadius.all(Radius.circular(12.r)),
                             color: ctrl.currentIndex == 0
                                 ? Colors.orangeAccent
                                 : Colors.blueGrey[50], // 更柔和的未选中背景色
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black12,
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
+                                blurRadius: 4.r,
+                                offset: Offset(0, 2.h),
                               ),
                             ],
                           ),
@@ -77,7 +77,7 @@ class OpenMember extends StatelessWidget {
                               Container(
                                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(6),
+                                  borderRadius: BorderRadius.circular(6.r),
                                 ),
                                 child: Text(
                                     "总共110元",
@@ -145,7 +145,7 @@ class OpenMember extends StatelessWidget {
                               Container(
                                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(6),
+                                  borderRadius: BorderRadius.circular(6.r),
                                 ),
                                 child: Text(
                                     "总共340元",
@@ -213,7 +213,7 @@ class OpenMember extends StatelessWidget {
                               Container(
                                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                                 decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(6),
+                                  borderRadius: BorderRadius.circular(6.r),
                                 ),
                                 child: Text(
                                     "总共580元",
@@ -235,16 +235,16 @@ class OpenMember extends StatelessWidget {
               SizedBox(height: 50.h,),
               Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(10),topRight: Radius.circular(10)),
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(10.r),topRight: Radius.circular(10.r)),
                 ),
                 child: Column(
                   children: [
                     Container(
                       height: 100.h,
-                      padding: EdgeInsets.all(20),
+                      padding: EdgeInsets.all(20.r),
                       decoration: BoxDecoration(
                           color: Colors.orange.withOpacity(0.2),
-                          borderRadius: BorderRadius.all(Radius.circular(15))
+                          borderRadius: BorderRadius.all(Radius.circular(15.r))
                       ),
                       child: Row(
                         children: [
@@ -261,9 +261,9 @@ class OpenMember extends StatelessWidget {
                       height: 100.h,
                       decoration: BoxDecoration(
                           color: CupertinoColors.secondarySystemBackground,
-                          borderRadius: BorderRadius.all(Radius.circular(15))
+                          borderRadius: BorderRadius.all(Radius.circular(15.r))
                       ),
-                      padding: EdgeInsets.all(20),
+                      padding: EdgeInsets.all(20.r),
                       child: Row(
                         children: [
                           Icon(Icons.question_mark,size: 30.r,color: Colors.blueAccent,),
@@ -308,7 +308,7 @@ class OpenMember extends StatelessWidget {
       height: 44.h,
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(12)),
+          borderRadius: BorderRadius.all(Radius.circular(12.r)),
           gradient: LinearGradient(
               colors: [
                 Colors.orangeAccent,

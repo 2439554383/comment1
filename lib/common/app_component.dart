@@ -16,6 +16,7 @@ showPicker<T>(List<T> pickerData, Function(List<T> selecteds) confirm) {
     height: 200,
     confirmText: '确认',
     cancelText: '取消',
+    containerColor: Colors.white,
     adapter: PickerDataAdapter<T>(
       pickerData: pickerData,
     ),
@@ -32,7 +33,7 @@ showPicker<T>(List<T> pickerData, Function(List<T> selecteds) confirm) {
       confirm(picker.getSelectedValues() as List<T>);
     },
   );
-  picker.showModal(Get.context!);
+  picker.showModal(Get.context!,backgroundColor: Colors.white);
 }
 
 

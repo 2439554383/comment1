@@ -59,8 +59,8 @@ class SettingCue extends StatelessWidget {
                           ctrl.changeCue();
                           Get.back();
                         },
-                        child: Text("确定",style: TextStyle(fontSize: 18),),)),
-                  SizedBox(height: 40,)
+                        child: Text("确定",style: TextStyle(fontSize: 18.sp),),)),
+                  SizedBox(height: 40.h,)
                 ],
               ),
             ]

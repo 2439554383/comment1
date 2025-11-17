@@ -34,8 +34,8 @@ class Exchange extends StatelessWidget {
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black12,
-                      blurRadius: 5,
-                      offset: const Offset(0, 2),
+                      blurRadius: 5.r,
+                      offset: Offset(0, 2.h),
                     ),
                   ],
                 ),
@@ -44,9 +44,9 @@ class Exchange extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.merge_type, color: Colors.orange),
+                        Icon(Icons.merge_type, color: Colors.orange,size: 20.r,),
                         SizedBox(width: 8.w),
-                        Text("兑换类型"),
+                        Text("兑换类型",style: TextStyle(fontSize: 14.sp),),
                       ],
                     ),
                     Container(
@@ -81,8 +81,8 @@ class Exchange extends StatelessWidget {
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black12,
-                      blurRadius: 5,
-                      offset: const Offset(0, 2),
+                      blurRadius: 5.r,
+                      offset: Offset(0, 2.h),
                     ),
                   ],
                 ),
@@ -91,9 +91,9 @@ class Exchange extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.account_balance_wallet, color: Colors.orange),
+                        Icon(Icons.account_balance_wallet, color: Colors.orange,size: 20.r,),
                         SizedBox(width: 8.w),
-                        Text("可用余额"),
+                        Text("可用余额",style: TextStyle(fontSize: 14.sp),),
                       ],
                     ),
                     Text(
@@ -119,15 +119,15 @@ class Exchange extends StatelessWidget {
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black12,
-                      blurRadius: 5,
-                      offset: const Offset(0, 2),
+                      blurRadius: 5.r,
+                      offset: Offset(0, 2.h),
                     ),
                   ],
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text("兑换积分"),
+                    Text("兑换积分",style: TextStyle(fontSize: 14.sp),),
                     SizedBox(
                       width: 120.w,
                       child: TextField(
@@ -159,20 +159,20 @@ class Exchange extends StatelessWidget {
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black12,
-                      blurRadius: 5,
-                      offset: const Offset(0, 2),
+                      blurRadius: 5.r,
+                      offset: Offset(0, 2.h),
                     ),
                   ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("兑换说明",
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text("兑换说明",
+                        style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14.sp)),
                     SizedBox(height: 8.h),
-                    Text("1. 使用余额兑换积分"),
-                    Text("2. 兑换成功后无法退回。"),
-                    Text("3. 兑换额度不可大于可用额度。"),
+                    Text("1. 使用余额兑换积分",style: TextStyle(fontSize: 12.sp),),
+                    Text("2. 兑换成功后无法退回。",style: TextStyle(fontSize: 12.sp),),
+                    Text("3. 兑换额度不可大于可用额度。",style: TextStyle(fontSize: 12.sp),),
                   ],
                 ),
               ),
@@ -193,17 +193,17 @@ class Exchange extends StatelessWidget {
       margin: EdgeInsets.only(left: 24.w, right: 24.h),
       height: 44.h,
       clipBehavior: Clip.hardEdge,
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(12)),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(12.r)),
         gradient: LinearGradient(colors: [Colors.orangeAccent, Colors.deepOrange]),
       ),
       child: TextButton(
         onPressed: () {
           ctrl.confirmExchange();
         },
-        child: const Text(
+        child: Text(
           "确认兑换",
-          style: TextStyle(color: Colors.white, fontSize: 16),
+          style: TextStyle(color: Colors.white, fontSize: 16.sp),
         ),
       ),
     );

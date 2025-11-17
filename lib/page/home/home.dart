@@ -119,7 +119,7 @@ class Home extends StatelessWidget {
   }
   functionGrid(BuildContext context, HomeCtrl ctrl){
     return Container(
-      padding: EdgeInsets.all(10.r),
+      padding: EdgeInsets.symmetric(vertical: 10.h),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20.r)
@@ -130,9 +130,9 @@ class Home extends StatelessWidget {
         physics: NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          mainAxisSpacing: 10,
-          crossAxisSpacing: 10,
-          childAspectRatio:1,
+          mainAxisSpacing: 10.h,
+          crossAxisSpacing: 10.w,
+          childAspectRatio:7/3,
         ),
         itemCount: ctrl.iconList.length,
         itemBuilder: (context,index){
@@ -213,8 +213,8 @@ class Home extends StatelessWidget {
 
                                           Navigator.pop(context);
                                           // 使用 ScreenUtil 的值，确保可以传入 200.w 和 200.h
-                                          final overlayWidth = 200.w;
-                                          final overlayHeight = 200.h;
+                                          final overlayWidth = 175.w;
+                                          final overlayHeight = 175.h;
                                           // 保存初始大小
                                           OverlayViewCtrl.initialOverlayWidth = overlayWidth;
                                           OverlayViewCtrl.initialOverlayHeight = overlayHeight;
@@ -227,10 +227,13 @@ class Home extends StatelessWidget {
                                             startPosition: OverlayPosition(0,MediaQuery.of(context).size.height/8),
                                           );
                                           await ctrl.updateList();
+                                          final screenSize = MediaQuery.of(context).size;
                                           await FlutterOverlayWindow.shareData({
                                             "type":"listview",
                                             "type_overlay_list":ctrl.cueList,
-                                            "token":HttpUtil().Mytoken
+                                            "token":HttpUtil().Mytoken,
+                                            "screen_width":screenSize.width,
+                                            "screen_height":screenSize.height
                                           });
                                           ctrl.openOverlay = true;
                                           ctrl.update();
@@ -246,18 +249,18 @@ class Home extends StatelessWidget {
                                       ctrl.update();
                                     },
                                     child: ctrl.openOverlay?Row(
-                                      spacing: 15,
+                                      spacing: 15.w,
                                       children: [
                                         SizedBox(),
-                                        Icon(CupertinoIcons.checkmark_alt_circle,size: 35,),
-                                        Text("关闭悬浮窗",style: TextStyle(fontSize: 20),)
+                                        Icon(CupertinoIcons.checkmark_alt_circle,size: 35.r,),
+                                        Text("关闭悬浮窗",style: TextStyle(fontSize: 20.sp),)
                                       ],
                                     ):Row(
-                                      spacing: 15,
+                                      spacing: 15.w,
                                       children: [
                                         SizedBox(),
-                                        Icon(Icons.block,size: 35,),
-                                        Text("开启悬浮窗",style: TextStyle(fontSize: 20),)
+                                        Icon(Icons.block,size: 35.r,),
+                                        Text("开启悬浮窗",style: TextStyle(fontSize: 20.sp),)
                                       ],
                                     ),
 
@@ -302,16 +305,16 @@ class Home extends StatelessWidget {
         style: ButtonStyle(
             backgroundColor: WidgetStatePropertyAll(Theme.of(context).primaryColor),
             shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10)
+                borderRadius: BorderRadius.circular(10.r)
             )
             )
         ),
         child: Row(
-          spacing: 15,
+          spacing: 15.w,
           children: [
             SizedBox(),
-            Icon(HugeIcons.strokeRoundedComment01,size: 35,),
-            Text("生成趣评",style: TextStyle(fontSize: 22),)
+            Icon(HugeIcons.strokeRoundedComment01,size: 35.r,),
+            Text("生成趣评",style: TextStyle(fontSize: 22.sp),)
           ],
         ),
       ),
@@ -332,7 +335,7 @@ class Home extends StatelessWidget {
                   backgroundColor: WidgetStatePropertyAll(Theme.of(context).primaryColor),
                   shape: WidgetStatePropertyAll(
                       RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)
+                          borderRadius: BorderRadius.circular(10.r)
                       )
                   )
               ),
@@ -362,11 +365,11 @@ class Home extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(15.r),
                 ),
-                padding: EdgeInsets.all(15),
+                padding: EdgeInsets.all(15.r),
                 child: Row(
-                  spacing: 20,
+                  spacing: 20.w,
                   children: [
                     ctrl.iconList1[index],
                     Expanded(
@@ -374,8 +377,8 @@ class Home extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(ctrl.titleList[index],style: TextStyle(fontSize: 20),),
-                          SizedBox(height: 5,),
+                          Text(ctrl.titleList[index],style: TextStyle(fontSize: 20.sp),),
+                          SizedBox(height: 5.h,),
                           Text(ctrl.describeList[index],softWrap: true,style: TextStyle(color: Theme.of(context).shadowColor),)
                         ],
                       ),
@@ -383,7 +386,7 @@ class Home extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 10,)
+              SizedBox(height: 10.h,)
             ]
         ),
       );

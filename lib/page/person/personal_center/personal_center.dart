@@ -43,21 +43,21 @@ class PersonalCenter extends StatelessWidget {
   userInfo(BuildContext context, PersonalCenterCtrl ctrl){
     return Container(
       child: Row(
-        spacing: 10,
+        spacing: 10.w,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ClipOval(child: Image.asset("assets/images/avatar.png",width: 65,height: 65,fit: BoxFit.cover,),),
+          ClipOval(child: Image.asset("assets/images/avatar.png",width: 65.w,height: 65.h,fit: BoxFit.cover,),),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                   alignment: Alignment.centerLeft,
-                  child: Text("${ctrl.userInfo.nickname}",style: TextStyle(fontSize: 20),)),
-              SizedBox(height: 2,),
+                  child: Text("${ctrl.userInfo.nickname}",style: TextStyle(fontSize: 20.sp),)),
+              SizedBox(height: 2.h,),
               Container(
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(topRight: Radius.circular(10),bottomRight: Radius.circular(10),topLeft: Radius.circular(10),bottomLeft: Radius.circular(10))
+                      borderRadius: BorderRadius.only(topRight: Radius.circular(10.r),bottomRight: Radius.circular(10.r),topLeft: Radius.circular(10.r),bottomLeft: Radius.circular(10.r))
                   ),
                   clipBehavior: Clip.hardEdge,
                   child: Text("可用积分：${ctrl.pointsInfo.availablePoints}",style: TextStyle(fontSize: 12.sp,fontWeight: FontWeight.w500,color: Color.fromRGBO(37, 38, 38, 1)))
@@ -91,7 +91,7 @@ class PersonalCenter extends StatelessWidget {
                             transform: Matrix4.identity()
                               ..setEntry(3, 2, 0.001)
                               ..rotateY( ctrl.animationController3.value* 2 * 3.1415926),
-                            child: Icon(Icons.shield_moon_rounded,color:Colors.orange,size: 30,))),]
+                            child: Icon(Icons.shield_moon_rounded,color:Colors.orange,size: 30.r,))),]
               );
             },
           ),
@@ -99,12 +99,12 @@ class PersonalCenter extends StatelessWidget {
             animation: ctrl.animationController3,
             builder: (BuildContext context, Widget? child) {
               return RotationTransition(turns: Tween(begin: 0.0,end: 1.0).chain(CurveTween(curve: Curves.elasticOut)).animate(ctrl.animationController3),
-                  child: Icon(CupertinoIcons.game_controller_solid,size: 30));
+                  child: Icon(CupertinoIcons.game_controller_solid,size: 30.r));
             },
           ),
           GestureDetector(onTap:(){
             Navigator.pushNamed(context, "/support_view");
-          },child: Icon(Icons.support_agent_rounded,size: 30,color:Colors.orange,))
+          },child: Icon(Icons.support_agent_rounded,size: 30.r,color:Colors.orange,))
         ],
       ),
     );
@@ -113,22 +113,22 @@ class PersonalCenter extends StatelessWidget {
     return DefaultTextStyle(
       style: TextStyle(color: Colors.white),
       child: Container(
-        padding: EdgeInsets.all(10),
+        padding: EdgeInsets.all(10.r),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(10)),
+            borderRadius: BorderRadius.all(Radius.circular(10.r)),
             color: Color.fromARGB(255, 1, 54, 97)
         ),
         child: Column(
-          spacing: 20,
+          spacing: 20.w,
           children: [
             Row(
               children: [
-                Icon(Icons.workspace_premium_sharp,color: Colors.deepOrange,),
-                Text("VIP全新升级"),
+                Icon(Icons.workspace_premium_sharp,color: Colors.deepOrange,size: 20.r,),
+                Text("VIP全新升级",style: TextStyle(fontSize: 16.sp),),
                 Expanded(child: SizedBox()),
                 Container(
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(topLeft: Radius.circular(10),topRight: Radius.circular(10),bottomLeft: Radius.circular(10),bottomRight: Radius.circular(10),)
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(10.r),topRight: Radius.circular(10.r),bottomLeft: Radius.circular(10.r),bottomRight: Radius.circular(10.r),)
                   ),
                   child: TextButton(
                     onPressed:(){
@@ -137,12 +137,12 @@ class PersonalCenter extends StatelessWidget {
                     },
                     child:Row(
                       children: [
-                        Text("立即充值"),
-                        Icon(Icons.play_circle,size: 15,)
+                        Text("立即充值",style: TextStyle(fontSize: 12.sp),),
+                        Icon(Icons.play_circle,size: 15.r,)
                       ],
                     ),
                     style: ButtonStyle(
-                        fixedSize: WidgetStatePropertyAll(Size(100,20))
+                        fixedSize: WidgetStatePropertyAll(Size(100.w,20.h))
                     ),
                   ),
                 )
@@ -153,26 +153,26 @@ class PersonalCenter extends StatelessWidget {
               children: [
                 Column(
                   children: [
-                    Text("评论生成"),
-                    Text("AI智能创作"),
+                    Text("评论生成",style: TextStyle(fontSize: 14.sp),),
+                    Text("AI智能创作",style: TextStyle(fontSize: 12.sp),),
                   ],
                 ),
                 Column(
                   children: [
-                    Text("图像生成"),
-                    Text("高清AI画作"),
+                    Text("图像生成",style: TextStyle(fontSize: 14.sp),),
+                    Text("高清AI画作",style: TextStyle(fontSize: 12.sp),),
                   ],
                 ),
                 Column(
                   children: [
-                    Text("声音克隆"),
-                    Text("声音自由创作"),
+                    Text("声音克隆",style: TextStyle(fontSize: 14.sp),),
+                    Text("声音自由创作",style: TextStyle(fontSize: 12.sp),),
                   ],
                 ),
                 Column(
                   children: [
-                    Icon(Icons.more, color: Colors.deepOrange),
-                    Text("更多特权"),
+                    Icon(Icons.more, color: Colors.deepOrange,size: 20.r,),
+                    Text("更多特权",style: TextStyle(fontSize: 12.sp),),
                   ],
                 ),
               ],

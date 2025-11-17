@@ -282,6 +282,7 @@ void overlayMain() async{
   await AppPreferences.init();
   HttpUtil().init();
   await UserData().init();
+
   runApp(
       OKToast(
         child: ScreenUtilInit(
@@ -289,35 +290,35 @@ void overlayMain() async{
           minTextAdapt: true,
           splitScreenMode: true,
           child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-              theme: ThemeData.light().copyWith(
-                  scaffoldBackgroundColor:    CupertinoColors.tertiarySystemGroupedBackground,
-                  textButtonTheme: TextButtonThemeData(
-                      style: ButtonStyle(
-                          foregroundColor: WidgetStatePropertyAll(Colors.white),
-                          backgroundColor: WidgetStatePropertyAll(ThemeData.light().primaryColor),
-                          textStyle: WidgetStatePropertyAll(TextStyle(color: Colors.white))
-                      )
-                  ),
-                  elevatedButtonTheme: ElevatedButtonThemeData(
-                      style: ButtonStyle(
-                          backgroundColor: WidgetStatePropertyAll(Colors.deepOrange),
-                          foregroundColor: WidgetStatePropertyAll(Colors.white)
-                      )
-                  ),
-                  bottomNavigationBarTheme: BottomNavigationBarThemeData(
-                      backgroundColor: Colors.transparent,
-                      unselectedItemColor: Colors.grey,
-                      selectedItemColor: Colors.orange,
-                      unselectedLabelStyle: TextStyle(color: Colors.black),
-                      showUnselectedLabels: true,
-                      type: BottomNavigationBarType.fixed,
-                      elevation: 0
-                  )
-              ),
-            home: OverlayView()
-          ),
+          debugShowCheckedModeBanner: false,
+            theme: ThemeData.light().copyWith(
+                scaffoldBackgroundColor:    CupertinoColors.tertiarySystemGroupedBackground,
+                textButtonTheme: TextButtonThemeData(
+                    style: ButtonStyle(
+                        foregroundColor: WidgetStatePropertyAll(Colors.white),
+                        backgroundColor: WidgetStatePropertyAll(ThemeData.light().primaryColor),
+                        textStyle: WidgetStatePropertyAll(TextStyle(color: Colors.white))
+                    )
+                ),
+                elevatedButtonTheme: ElevatedButtonThemeData(
+                    style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(Colors.deepOrange),
+                        foregroundColor: WidgetStatePropertyAll(Colors.white)
+                    )
+                ),
+                bottomNavigationBarTheme: BottomNavigationBarThemeData(
+                    backgroundColor: Colors.transparent,
+                    unselectedItemColor: Colors.grey,
+                    selectedItemColor: Colors.orange,
+                    unselectedLabelStyle: TextStyle(color: Colors.black),
+                    showUnselectedLabels: true,
+                    type: BottomNavigationBarType.fixed,
+                    elevation: 0
+                )
+            ),
+          home: OverlayView()
         ),
-      ),
+        ),
+      )
   );
 }
