@@ -34,7 +34,7 @@ class OverlayView extends StatelessWidget {
         onTap: () async{
           try {
             final screenWidth = 300.0*ctrl.widthRatio; // 物理屏幕宽度（像素）
-            final screenHeight = 900.0*ctrl.heightRatio; // 物理屏幕高度（像素）
+            final screenHeight = 1050.0*ctrl.heightRatio; // 物理屏幕高度（像素）
             ctrl.resizeing = true;
             ctrl.update();
             await FlutterOverlayWindow.resizeOverlay(1.0,screenHeight,false);
@@ -84,11 +84,11 @@ class OverlayView extends StatelessWidget {
         ),
         child: SafeArea(
           child: Container(
-            padding: EdgeInsets.only(top: 5 * ctrl.heightRatio),
+            padding: EdgeInsets.only(top: 5 * ctrl.heightRatio,bottom: 10 *ctrl.heightRatio),
             child: Column(
                 children: [
-                  Flexible(
-                    flex: 5,
+                  Container(
+                    height: 100*ctrl.heightRatio,
                     child: ctrl.hasList?Container(
                       padding: EdgeInsets.only(top: 10 * ctrl.heightRatio),
                       child: GridView.builder(
@@ -102,22 +102,27 @@ class OverlayView extends StatelessWidget {
                                 ctrl.changeStatus(index);
                               },
                               behavior: HitTestBehavior.opaque,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  AbsorbPointer(
-                                    child: Transform.scale(
-                                      scale: 0.8,
-                                      child: Checkbox(
-                                        value: ctrl.selectList[index].isCheck,
-                                        onChanged: (value){},
-                                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                        visualDensity: VisualDensity.compact,
+                              child: Center(
+                                child: Container(
+                                  height: 45*ctrl.heightRatio,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      AbsorbPointer(
+                                        child: Transform.scale(
+                                          scale: 0.8,
+                                          child: Checkbox(
+                                            value: ctrl.selectList[index].isCheck,
+                                            onChanged: (value){},
+                                            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            visualDensity: VisualDensity.compact,
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                      Expanded(child: Text(ctrl.selectList[index].typeName,softWrap: true,style: TextStyle(fontSize: 14 * ctrl.widthRatio),))
+                                    ],
                                   ),
-                                  Expanded(child: Text(ctrl.selectList[index].typeName,softWrap: true,style: TextStyle(fontSize: 14 * ctrl.widthRatio),))
-                                ],
+                                ),
                               ),
                             );
                           },
@@ -254,17 +259,7 @@ class OverlayView extends StatelessWidget {
                         spacing: 20 * ctrl.widthRatio,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(
-                            child: TextButton(onPressed: () async{
-                              FocusScope.of(context).unfocus();
-                              ctrl.postComment();
-                              ctrl.showFloatingMessage(context,"真棒！又发了一条评论");
-                            },
-                              child: FittedBox(child: Text("生成",style: TextStyle(fontSize: 14 * ctrl.widthRatio),)),
-                              style: ButtonStyle(
-                              ),
-                            ),
-                          ),
+
                           // Expanded(
                           //   child: TextButton(
                           //       onPressed: (){
@@ -353,30 +348,31 @@ class OverlayView extends StatelessWidget {
                           // ),
                           Expanded(
                             child: TextButton(
-                              onPressed: () async {
-                                ctrl.copy();
-                              },
-                              child: FittedBox(child: Text("复制",style: TextStyle(fontSize: 14 * ctrl.widthRatio),)),
-                            ),
-                          ),
-                          Expanded(
-                            child: TextButton(
                               onPressed: () async{
                                 ctrl.paste();
                               },
                               child: FittedBox(child: Text("粘贴",style: TextStyle(fontSize: 14 * ctrl.widthRatio),)),
                             ),
                           ),
-                          // Expanded(
-                          //   child: TextButton(
-                          //     style: ButtonStyle(
-                          //     ),
-                          //     onPressed: () async{
-                          //       ctrl.textEditingController.clear();
-                          //     },
-                          //     child: FittedBox(child: Text("清空")),
-                          //   ),
-                          // ),
+                          Expanded(
+                            child: TextButton(onPressed: () async{
+                              FocusScope.of(context).unfocus();
+                              ctrl.postComment();
+                              ctrl.showFloatingMessage(context,"真棒！又发了一条评论");
+                            },
+                              child: FittedBox(child: Text("生成",style: TextStyle(fontSize: 14 * ctrl.widthRatio),)),
+                              style: ButtonStyle(
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: TextButton(
+                              onPressed: () async {
+                                ctrl.copy();
+                              },
+                              child: FittedBox(child: Text("复制",style: TextStyle(fontSize: 14 * ctrl.widthRatio),)),
+                            ),
+                          ),
                           Expanded(
                             child: TextButton(
                                 style: ButtonStyle(
@@ -406,6 +402,17 @@ class OverlayView extends StatelessWidget {
                                   }
                                 }, child: FittedBox(child: Text("最小化",style: TextStyle(fontSize: 14 * ctrl.widthRatio),))),
                           ),
+                          // Expanded(
+                          //   child: TextButton(
+                          //     style: ButtonStyle(
+                          //     ),
+                          //     onPressed: () async{
+                          //       ctrl.textEditingController.clear();
+                          //     },
+                          //     child: FittedBox(child: Text("清空")),
+                          //   ),
+                          // ),
+
                         ],
                       ),
                     ),

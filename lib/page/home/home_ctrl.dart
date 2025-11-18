@@ -78,8 +78,8 @@ class HomeCtrl extends GetxController with GetTickerProviderStateMixin{
   //var
   List iconList = [
     // Icon(Icons.face, size: 45.r, color: Colors.deepPurpleAccent.shade200),
-    // Icon(HugeIcons.strokeRoundedAiVoice, size: 35.r, color: Colors.blueGrey.shade500),
-    // Icon(Icons.image, size: 35.r, color: Colors.deepPurple.shade500),
+    Icon(HugeIcons.strokeRoundedAiVoice, size: 35.r, color: Colors.blueGrey.shade500),
+    Icon(Icons.image, size: 35.r, color: Colors.deepPurple.shade500),
     Icon(Icons.water_drop, size: 35.r, color: Colors.purple.shade400),
     Icon(Icons.keyboard_voice_sharp, size: 35.r, color: Colors.purple.shade400),
     // Icon(HugeIcons.strokeRoundedPpt01, size: 30, color: Colors.indigoAccent.shade200),
@@ -90,8 +90,8 @@ class HomeCtrl extends GetxController with GetTickerProviderStateMixin{
   ];
   List routeList = [
     // () => Froute.push(Froute.aiFace),
-    // () => Froute.push(Froute.voiceClone),
-    // () => Froute.push(Froute.aiImage),
+    () => Froute.push(Froute.voiceClone),
+    () => Froute.push(Froute.aiImage),
     () => Froute.push(Froute.waterMark),
     () => Froute.push(Froute.voiceExtract),
     // () => {showToast("暂未开放")},
@@ -105,8 +105,8 @@ class HomeCtrl extends GetxController with GetTickerProviderStateMixin{
   ];
   List textList = [
     // "Ai换脸",
-    // "声音克隆",
-    // "Ai生图",
+    "声音克隆",
+    "Ai生图",
     "去水印",
     "提取人声",
     // "PPT生成",

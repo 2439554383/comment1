@@ -1,4 +1,5 @@
 // 底部导航栏
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../common/app_component.dart';
@@ -31,13 +32,13 @@ class _BottomBarState extends State<BottomBar> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     Icon(Icons.home),
-                    Text(
+                    AutoSizeText(
                       '首页',
                       style: TextStyle(
                           color: widget.currentIndex == 0
                               ? ColorStandard.main
                               : Color(0xff777777),
-                          fontSize: 12.sp
+
                       ),
                     ),
                   ]),
@@ -53,13 +54,12 @@ class _BottomBarState extends State<BottomBar> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Icon(Icons.golf_course),
-                    Text(
+                    AutoSizeText(
                       '教程',
                       style: TextStyle(
                           color: widget.currentIndex == 1
                               ? ColorStandard.main
                               : Color(0xff777777),
-                          fontSize: 12.sp
                       ),
                     ),
                   ],
@@ -75,13 +75,12 @@ class _BottomBarState extends State<BottomBar> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Icon(Icons.store),
-                  Text(
+                  AutoSizeText(
                     '商城',
                     style: TextStyle(
                         color: widget.currentIndex == 2
                             ? ColorStandard.main
                             : Color(0xff777777),
-                        fontSize: 12.sp
                     ),
                   ),
                 ],
@@ -97,13 +96,12 @@ class _BottomBarState extends State<BottomBar> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Icon(Icons.leaderboard),
-                  Text(
+                  AutoSizeText(
                     '排行',
                     style: TextStyle(
                         color: widget.currentIndex == 3
                             ? ColorStandard.main
                             : Color(0xff777777),
-                        fontSize: 12.sp
                     ),
                   ),
                 ],
@@ -120,13 +118,12 @@ class _BottomBarState extends State<BottomBar> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Icon(Icons.person),
-                  Text(
+                  AutoSizeText(
                     '我的',
                     style: TextStyle(
                         color: widget.currentIndex == 4
                             ? ColorStandard.main
                             : Color(0xff777777),
-                        fontSize: 12.sp
                     ),
                   ),
                 ],
