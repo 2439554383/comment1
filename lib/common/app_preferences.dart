@@ -55,5 +55,6 @@ abstract class FStorageKey {
   static const fpositonObject = 'fpositonObject';
   static const frecordObject = 'frecordObject';
   static const typeList = 'typeList';
-
+  static const isActive = 'isActive';
+  static const code = 'code';
 }

@@ -219,6 +219,28 @@ class OverlayViewCtrl extends GetxController {
     content = textEditingController.text;
     try {
       await overlayChannel.invokeMethod('printMessage', {'msg': content});
+      try {
+        streamController.close();
+        clear();
+        final overlayWidth = 200 * widthRatio;
+        final overlayHeight = 200 * heightRatio;
+        switchWindows(false);
+        await FlutterOverlayWindow.updateFlag(OverlayFlag.defaultFlag);
+        // 先恢复初始大小
+        resizeing = false;
+        update();
+        await FlutterOverlayWindow.resizeOverlay(2.0, overlayHeight, false);
+
+        // 更新 flag
+
+
+        // 最后切换窗口状态
+
+      } catch (e) {
+        print("最小化失败: $e");
+        // 即使失败也切换窗口状态
+        switchWindows(false);
+      }
     } on PlatformException catch (e) {
       print("发送失败: ${e.message}");
     }

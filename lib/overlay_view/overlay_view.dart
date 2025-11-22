@@ -34,7 +34,7 @@ class OverlayView extends StatelessWidget {
         onTap: () async{
           try {
             final screenWidth = 300.0*ctrl.widthRatio; // 物理屏幕宽度（像素）
-            final screenHeight = 1050.0*ctrl.heightRatio; // 物理屏幕高度（像素）
+            final screenHeight = 1000.0*ctrl.heightRatio; // 物理屏幕高度（像素）
             ctrl.resizeing = true;
             ctrl.update();
             await FlutterOverlayWindow.resizeOverlay(1.0,screenHeight,false);
@@ -148,31 +148,31 @@ class OverlayView extends StatelessWidget {
                   //     )
                   // ),
                   SizedBox(height: 5 * ctrl.heightRatio,),
-                  Flexible(
-                      flex: 2,
-                      child: TextFormField(
-                        textAlignVertical: TextAlignVertical.center,
-                        controller: ctrl.tcCount,
-                        style: TextStyle(
-                          fontSize: 14 * ctrl.widthRatio,
-                          height: 1.0, // 设置行高为1，避免额外的行间距
-                        ),
-                        cursorHeight: 14 * ctrl.widthRatio, // 游标高度与字体大小一致
-                        decoration: InputDecoration(
-                          hintText: "字数",
-                          hintStyle: TextStyle(
-                            fontStyle: FontStyle.italic,
-                            fontSize: 14 * ctrl.widthRatio,
-                            height: 1.0, // hintText 也设置相同的行高
-                          ),
-                          isDense: true, // 减少默认内边距
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 8 * ctrl.widthRatio,
-                            vertical: 8 * ctrl.heightRatio, // 垂直内边距设为0，让 textAlignVertical 生效
-                          ),
-                        ),
-                      )
-                  ),
+                  // Flexible(
+                  //     flex: 2,
+                  //     child: TextFormField(
+                  //       textAlignVertical: TextAlignVertical.center,
+                  //       controller: ctrl.tcCount,
+                  //       style: TextStyle(
+                  //         fontSize: 14 * ctrl.widthRatio,
+                  //         height: 1.0, // 设置行高为1，避免额外的行间距
+                  //       ),
+                  //       cursorHeight: 14 * ctrl.widthRatio, // 游标高度与字体大小一致
+                  //       decoration: InputDecoration(
+                  //         hintText: "字数",
+                  //         hintStyle: TextStyle(
+                  //           fontStyle: FontStyle.italic,
+                  //           fontSize: 14 * ctrl.widthRatio,
+                  //           height: 1.0, // hintText 也设置相同的行高
+                  //         ),
+                  //         isDense: true, // 减少默认内边距
+                  //         contentPadding: EdgeInsets.symmetric(
+                  //           horizontal: 8 * ctrl.widthRatio,
+                  //           vertical: 8 * ctrl.heightRatio, // 垂直内边距设为0，让 textAlignVertical 生效
+                  //         ),
+                  //       ),
+                  //     )
+                  // ),
                   Flexible(
                     flex: 5,
                     child:StreamBuilder(
@@ -211,17 +211,17 @@ class OverlayView extends StatelessWidget {
                                   child: TextFormField(
                                     textAlignVertical: TextAlignVertical.center,
                                     style: TextStyle(
-                                      fontSize: 14 * ctrl.widthRatio,
+                                      fontSize: 15 * ctrl.widthRatio,
                                       height: 1.0, // 设置行高为1，避免额外的行间距
                                     ),
-                                    cursorHeight: 14 * ctrl.widthRatio, // 游标高度与字体大小一致
+                                    cursorHeight: 15 * ctrl.widthRatio, // 游标高度与字体大小一致
                                     controller: ctrl.textEditingController,
                                     maxLines: 10,
                                     keyboardType: TextInputType.text,
                                     decoration: InputDecoration(
                                         hintStyle: TextStyle(
                                           fontStyle: FontStyle.italic,
-                                          fontSize: 14 * ctrl.widthRatio,
+                                          fontSize: 15 * ctrl.widthRatio,
                                           height: 1.0, // hintText 也设置相同的行高
                                         ),
                                         hintText: "https://v.douyin.com/2mOjGQQiqm0/",
@@ -234,12 +234,12 @@ class OverlayView extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: 5 * ctrl.heightRatio,),
-                                Container(
-                                    padding: EdgeInsets.only(right: 20 * ctrl.widthRatio),
-                                    alignment: Alignment.centerRight,
-                                    child: Text("内容由Ai生成",style: TextStyle(fontSize: 12 * ctrl.widthRatio),)
-                                ),
+                                // SizedBox(height: 5 * ctrl.heightRatio,),
+                                // Container(
+                                //     padding: EdgeInsets.only(right: 20 * ctrl.widthRatio),
+                                //     alignment: Alignment.centerRight,
+                                //     child: Text("内容由Ai生成",style: TextStyle(fontSize: 12 * ctrl.widthRatio),)
+                                // ),
                                 SizedBox(height: 5 * ctrl.heightRatio,),
                                 Container(
                                   color: Colors.black54,
@@ -347,61 +347,97 @@ class OverlayView extends StatelessWidget {
                           //       child: FittedBox(child: Text("常用语句"))),
                           // ),
                           Expanded(
-                            child: TextButton(
-                              onPressed: () async{
-                                ctrl.paste();
-                              },
-                              child: FittedBox(child: Text("粘贴",style: TextStyle(fontSize: 14 * ctrl.widthRatio),)),
-                            ),
-                          ),
-                          Expanded(
-                            child: TextButton(onPressed: () async{
-                              FocusScope.of(context).unfocus();
-                              ctrl.postComment();
-                              ctrl.showFloatingMessage(context,"真棒！又发了一条评论");
-                            },
-                              child: FittedBox(child: Text("生成",style: TextStyle(fontSize: 14 * ctrl.widthRatio),)),
-                              style: ButtonStyle(
+                            child: Container(
+                              height: 36 * ctrl.widthRatio,
+                              child: TextFormField(
+                                textAlignVertical: TextAlignVertical.center,
+                                keyboardType: TextInputType.number, // 数字键盘
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly, // 只允许输入 0-9
+                                ],
+                                controller: ctrl.tcCount,
+                                decoration: InputDecoration(
+                                  hintText: "字数",
+                                  enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Colors.grey,
+                                      ),
+                                      borderRadius: BorderRadius.circular(100.r)
+                                  ),
+                                  focusedBorder:OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Colors.deepPurple,
+                                        width: 1.5* ctrl.widthRatio
+                                      ),
+                                      borderRadius: BorderRadius.circular(100.r)
+                                  ),
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 0),
+                                  hintStyle: TextStyle(fontSize: 14 * ctrl.widthRatio),
+                                ),
+                                style: TextStyle(fontSize: 14 * ctrl.widthRatio),
                               ),
                             ),
                           ),
                           Expanded(
-                            child: TextButton(
-                              onPressed: () async {
-                                ctrl.copy();
-                              },
-                              child: FittedBox(child: Text("复制",style: TextStyle(fontSize: 14 * ctrl.widthRatio),)),
+                            child: Container(
+                              height: 36 * ctrl.widthRatio,
+                              child: TextButton(
+                                onPressed: () async{
+                                  ctrl.paste();
+                                },
+                                style: TextButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(100.r),
+                                  ),
+                                  padding: EdgeInsets.zero,
+                                ),
+                                child: FittedBox(child: Text("粘贴",style: TextStyle(fontSize: 14 * ctrl.widthRatio),)),
+                              ),
                             ),
                           ),
                           Expanded(
-                            child: TextButton(
-                                style: ButtonStyle(
+                            child: Container(
+                              height: 36 * ctrl.widthRatio,
+                              child: TextButton(onPressed: () async{
+                                FocusScope.of(context).unfocus();
+                                ctrl.postComment();
+                                ctrl.showFloatingMessage(context,"真棒！又发了一条评论");
+                              },
+                                child: FittedBox(child: Text("生成",style: TextStyle(fontSize: 14 * ctrl.widthRatio),)),
+                                style: TextButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(100.r),
+                                  ),
+                                  padding: EdgeInsets.zero,
                                 ),
-                                onPressed: () async{
-                                  try {
-                                    ctrl.streamController.close();
-                                    ctrl.clear();
-                                    final overlayWidth = 200 * ctrl.widthRatio;
-                                    final overlayHeight = 200 * ctrl.heightRatio;
-                                    ctrl.switchWindows(false);
-                                    await FlutterOverlayWindow.updateFlag(OverlayFlag.defaultFlag);
-                                    // 先恢复初始大小
-                                    ctrl.resizeing = false;
-                                    ctrl.update();
-                                    await FlutterOverlayWindow.resizeOverlay(2.0, overlayHeight, false);
-
-                                    // 更新 flag
-
-
-                                    // 最后切换窗口状态
-
-                                  } catch (e) {
-                                    print("最小化失败: $e");
-                                    // 即使失败也切换窗口状态
-                                    ctrl.switchWindows(false);
-                                  }
-                                }, child: FittedBox(child: Text("最小化",style: TextStyle(fontSize: 14 * ctrl.widthRatio),))),
+                              ),
+                            ),
                           ),
+                          Expanded(
+                            child: Container(
+                              height: 36 * ctrl.widthRatio,
+                              child: TextButton(
+                                onPressed: () async {
+                                  ctrl.copy();
+                                },
+                                style: TextButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(100.r),
+                                  ),
+                                  padding: EdgeInsets.zero,
+                                ),
+                                child: FittedBox(child: Text("复制",style: TextStyle(fontSize: 14 * ctrl.widthRatio),)),
+                              ),
+                            ),
+                          ),
+                          // Expanded(
+                          //   child: TextButton(
+                          //       style: ButtonStyle(
+                          //       ),
+                          //       onPressed: () async{
+                          //
+                          //       }, child: FittedBox(child: Text("最小化",style: TextStyle(fontSize: 14 * ctrl.widthRatio),))),
+                          // ),
                           // Expanded(
                           //   child: TextButton(
                           //     style: ButtonStyle(

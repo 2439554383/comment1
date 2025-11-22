@@ -2,6 +2,7 @@
 import 'package:comment1/page/home/home.dart';
 import 'package:comment1/page/person/personal_center/open_member/open_member.dart';
 import 'package:comment1/page/person/personal_center/privacy_policy/privacy_policy.dart';
+import 'package:comment1/page/person/personal_center/service/service.dart';
 import 'package:comment1/page/person/personal_center/user_agreement/user_agreement.dart';
 import 'package:comment1/page/person/personal_center/feedback_report/feedback_report.dart';
 import 'package:get/get.dart';
@@ -71,7 +72,7 @@ class Froute{
   static const String privacy_policy = '/privacy_policy';
   static const String user_agreement = '/user_agreement';
   static const String feedback_report = '/feedback_report';
-
+  static const String service = '/service';
 
   static List<GetPage> getPages = [
     GetPage(name: aiImage, page: () => AiImage()),
@@ -105,7 +106,7 @@ class Froute{
     GetPage(name: privacy_policy, page: () => PrivacyPolicy()),
     GetPage(name: user_agreement, page: () => UserAgreement()),
     GetPage(name: feedback_report, page: () => FeedbackReport()),
-
+    GetPage(name: service, page: () => Service()),
   ];
 
   static push(String name,{arguments, Function(dynamic)? result}){

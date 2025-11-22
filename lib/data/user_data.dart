@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import '../api/http_api.dart';
 import '../common/app_preferences.dart';
 import '../common/loading.dart';
 import '../model/comment_type.dart';
@@ -21,6 +22,10 @@ class UserData {
   bool isLogin = false;
   bool isFirstLogin = true;
   UserResponse userResponse = UserResponse();
+
+  bool isActive = false;
+
+  String activeCode = "";
   init()async{
     getAppPreferences();
   }
@@ -56,6 +61,13 @@ class UserData {
     isFirstLogin = false;
     await AppPreferences.setBool("isFirstLogin", false);
   }
+  saveActive(bool value,String code) async {
+    isActive = value;
+    activeCode = code;
+    await AppPreferences.setBool(FStorageKey.isActive, value);
+    await AppPreferences.setString(FStorageKey.code, code);
+  }
+
   saveTypeList(List<CommentType> list) {
     typeList = list;
     // 转成 Map 列表
@@ -119,8 +131,51 @@ class UserData {
     }catch(e){}
   }
 
+
+  getActive(String code) async{
+    bool isSuccess = await post_active(code);
+    if(isSuccess==true){
+      print("激活卡还未过期");
+    }
+    else{
+      saveActive(false,"");
+      logOut();
+    }
+  }
+
+  post_active(String text) async{
+    var ssl = 'uLeQd9rHTh0GQG7RDiSzF8gJjvpVKxbFPy411f7djE9JC2P8eefOxLaO/BdnbmMejYFjN6NYDE6F2H+N6IaPXCRVpj89SPeY4yTbE4QIwg0DczGzxU0VE+cK4DHKa/uIrlCNL5tdJPL5hJ+NHFA3G6jNw8uhfB4g/rjeF+W/gmCkNWmXQ+TKzJOh7M5+jfcXc3/ew1Us5CM8Rui/mlpMMAQX8C/a+fEQpi1QguYDnGtWr+H7A5MZtaiMAn+heCfr1U4EgcBemc2/ehjOp3tELRKrOMQFS3dVKP8EWBTWbvIqlVZlxV0xM8LjyYhKbVFUgMb9Bg9XUC+IyJLl4lVdsXYQuyXT1ncT2nnzrhz3NPwFx/FGAt/Nw6jHIp7b+3uMwkdNaL8WHNPuA/FKbbg5AoYdF16+FNdid15e3bEJwiPl9Wc4/Pbx0/o66HxSLiw/7w60AcWvRET0DQJXq8hVVA==';
+    var url = 'http://www.aiply.top/AppEn.php?appid=12345678&m=3b10dc6194ecc6add629061e45790a68';
+    var mutualkey = '03a9f86fc3b6278af71785dd98ec3db7';
+    var date = DateTime.now().toString();
+    var api = 'login.ic';
+    var appsafecode='';
+    var md5 = '';
+    var icid=text;
+    var icpwd="";
+    var key="";
+    var maxoror='10';
+    var post_url = '$url&api=$api&BSphpSeSsL=$ssl&date=$date&mutualkey=$mutualkey&appsafecode=$appsafecode&md5=$md5&icid=$icid&icpwd=$icpwd&key=$key&maxoror=$maxoror';
+    print(post_url);
+    final response = await http_api().post_active(
+        post_url,
+        text
+    );
+    if(response == true){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
   getAppPreferences() async {
     final token = AppPreferences.getString(FStorageKey.token);
+    isActive = AppPreferences.getBool(FStorageKey.isActive)??false;
+    activeCode = AppPreferences.getString(FStorageKey.code)??"";
+    if(isActive==true){
+      getActive(activeCode);
+    }
     if(token!=null){
       HttpUtil().setToken(token);
       isLogin = true;

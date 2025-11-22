@@ -1,4 +1,4 @@
-package com.example.comment1;
+package com.example.aiply;
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity;
@@ -26,3 +26,4 @@ public class MainActivity extends FlutterActivity {
                 );
     }
 }
+

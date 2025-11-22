@@ -103,7 +103,7 @@ class PersonalCenter extends StatelessWidget {
             },
           ),
           GestureDetector(onTap:(){
-            Navigator.pushNamed(context, "/support_view");
+            Froute.push("service");
           },child: Icon(Icons.support_agent_rounded,size: 30.r,color:Colors.orange,))
         ],
       ),
